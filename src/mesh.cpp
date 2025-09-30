@@ -2,25 +2,19 @@
 
 #include <glad/glad.h>
 
-Mesh::Mesh(int vertexCount)
+FaceMesh::FaceMesh()
 {
-	setVertexCount(vertexCount);
 	glGenVertexArrays(1, &m_VAO);
 }
 
-Mesh::~Mesh()
+FaceMesh::~FaceMesh()
 {
 	glDeleteVertexArrays(1, &m_VAO);
 }
 
-void Mesh::render() const
+void FaceMesh::render(int vertexCount) const
 {
 	glBindVertexArray(m_VAO);
-	glDrawArrays(GL_TRIANGLES, 0, m_vertexCount);
+	glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 	glBindVertexArray(0);
-}
-
-void Mesh::setVertexCount(int vertexCount)
-{
-	m_vertexCount = vertexCount;
 }

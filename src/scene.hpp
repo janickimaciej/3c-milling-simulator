@@ -25,12 +25,11 @@ public:
 
 private:
 	Camera m_camera;
-	ShaderProgram m_shaderProgram{"src/shaders/VS.glsl", "src/shaders/FS.glsl"};
 	
-	glm::vec3 m_materialSize{2.0f, 1.0f, 0.5f};
-	glm::ivec2 m_gridSize{200, 100};
+	glm::vec3 m_materialSize{2.0f, 0.5f, 1.0f};
+	glm::ivec2 m_gridSize{20, 10};
 
-	Mesh m_mesh;
 	Surface m_surface;
 	Texture m_heightMap;
+	FaceMesh m_faceMesh{};
 };

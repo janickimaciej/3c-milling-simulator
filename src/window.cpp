@@ -1,6 +1,7 @@
 #include "window.hpp"
 
 #include "gui.hpp"
+#include "shaderPrograms.hpp"
 
 #include <cmath>
 #include <string>
@@ -25,6 +26,8 @@ Window::Window(const glm::ivec2& initialSize) :
 	glfwSetScrollCallback(m_windowPtr, callbackWrapper<&Window::scrollCallback>);
 
 	gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
+
+	ShaderPrograms::init();
 }
 
 Window::~Window()

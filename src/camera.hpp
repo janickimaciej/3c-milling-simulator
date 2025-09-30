@@ -7,8 +7,7 @@
 class Camera
 {
 public:
-	Camera(const glm::ivec2& windowSize, float fovYDeg, float nearPlane, float farPlane,
-		const ShaderProgram& surfaceShaderProgram);
+	Camera(const glm::ivec2& windowSize, float fovYDeg, float nearPlane, float farPlane);
 	virtual ~Camera() = default;
 	void use() const;
 	glm::mat4 getMatrix() const;
@@ -35,8 +34,6 @@ private:
 
 	glm::mat4 m_viewMatrixInverse{1};
 	glm::mat4 m_projectionMatrix{1};
-
-	const ShaderProgram& m_surfaceShaderProgram;
 
 	glm::vec3 getPos() const;
 

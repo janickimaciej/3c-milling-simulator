@@ -1,16 +1,16 @@
 #include "camera.hpp"
 
+#include "shaderPrograms.hpp"
+
 #include <glm/gtc/constants.hpp>
 
 #include <cmath>
 
-Camera::Camera(const glm::ivec2& windowSize, float fovYDeg, float nearPlane, float farPlane,
-	const ShaderProgram& surfaceShaderProgram) :
+Camera::Camera(const glm::ivec2& windowSize, float fovYDeg, float nearPlane, float farPlane) :
 	m_windowSize{windowSize},
 	m_nearPlane{nearPlane},
 	m_farPlane{farPlane},
-	m_fovYDeg{fovYDeg},
-	m_surfaceShaderProgram{surfaceShaderProgram}
+	m_fovYDeg{fovYDeg}
 {
 	updateViewMatrix();
 	updateProjectionMatrix();
@@ -150,6 +150,15 @@ void Camera::updateShaders() const
 	glm::mat4 projectionViewMatrix = m_projectionMatrix * glm::inverse(m_viewMatrixInverse);
 	glm::mat4 projectionViewMatrixInverse = glm::inverse(projectionViewMatrix);
 
-	m_surfaceShaderProgram.setUniform("projectionViewMatrix", projectionViewMatrix);
-	m_surfaceShaderProgram.setUniform("cameraPos", getPos());
+	ShaderPrograms::topFace->use();
+	ShaderPrograms::topFace->setUniform("projectionViewMatrix", projectionViewMatrix);
+	ShaderPrograms::topFace->setUniform("cameraPos", getPos());
+
+	ShaderPrograms::sideFace->use();
+	ShaderPrograms::sideFace->setUniform("projectionViewMatrix", projectionViewMatrix);
+	ShaderPrograms::sideFace->setUniform("cameraPos", getPos());
+
+	ShaderPrograms::bottomFace->use();
+	ShaderPrograms::bottomFace->setUniform("projectionViewMatrix", projectionViewMatrix);
+	ShaderPrograms::bottomFace->setUniform("cameraPos", getPos());
 }

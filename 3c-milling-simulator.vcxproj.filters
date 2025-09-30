@@ -69,6 +69,9 @@
     <ClCompile Include="src\texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\shaderPrograms.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dep\imgui\imconfig.h">
@@ -122,11 +125,19 @@
     <ClInclude Include="src\texture.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\shaderPrograms.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\side.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="dep\imgui\misc\debuggers\imgui.natstepfilter" />
     <None Include="src\shaders\FS.glsl" />
-    <None Include="src\shaders\VS.glsl" />
+    <None Include="src\shaders\topFaceVS.glsl" />
+    <None Include="src\shaders\bottomFaceVS.glsl" />
+    <None Include="src\shaders\sideFaceVS.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="dep\imgui\misc\debuggers\imgui.natvis" />

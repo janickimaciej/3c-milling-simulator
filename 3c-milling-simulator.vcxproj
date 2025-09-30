@@ -174,6 +174,7 @@
     <ClCompile Include="src\mesh.cpp" />
     <ClCompile Include="src\scene.cpp" />
     <ClCompile Include="src\shaderProgram.cpp" />
+    <ClCompile Include="src\shaderPrograms.cpp" />
     <ClCompile Include="src\surface.cpp" />
     <ClCompile Include="src\texture.cpp" />
     <ClCompile Include="src\window.cpp" />
@@ -193,6 +194,8 @@
     <ClInclude Include="src\mesh.hpp" />
     <ClInclude Include="src\scene.hpp" />
     <ClInclude Include="src\shaderProgram.hpp" />
+    <ClInclude Include="src\shaderPrograms.hpp" />
+    <ClInclude Include="src\side.hpp" />
     <ClInclude Include="src\surface.hpp" />
     <ClInclude Include="src\texture.hpp" />
     <ClInclude Include="src\window.hpp" />
@@ -200,7 +203,9 @@
   <ItemGroup>
     <None Include="dep\imgui\misc\debuggers\imgui.natstepfilter" />
     <None Include="src\shaders\FS.glsl" />
-    <None Include="src\shaders\VS.glsl" />
+    <None Include="src\shaders\topFaceVS.glsl" />
+    <None Include="src\shaders\bottomFaceVS.glsl" />
+    <None Include="src\shaders\sideFaceVS.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="dep\imgui\misc\debuggers\imgui.natvis" />
