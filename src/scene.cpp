@@ -6,8 +6,8 @@
 #include <cstdlib>
 
 static constexpr float fovYDeg = 60.0f;
-static constexpr float nearPlane = 0.1f;
-static constexpr float farPlane = 1000.0f;
+static constexpr float nearPlane = 10.0f;
+static constexpr float farPlane = 10000.0f;
 
 Scene::Scene(const glm::ivec2& windowSize) :
 	m_camera{windowSize, fovYDeg, nearPlane, farPlane},
@@ -24,7 +24,7 @@ void Scene::update()
 
 	if (ind < (m_gridSize.x + 1) * (m_gridSize.y + 1))
 	{
-		float depth = static_cast<float>(std::rand()) / RAND_MAX / 10;
+		float depth = static_cast<float>(std::rand()) / RAND_MAX * 10;
 		m_surface[ind % (m_gridSize.x + 1)][ind / (m_gridSize.x + 1)] = -depth;
 		m_heightMap.update(0, 0, m_gridSize.x + 1, m_gridSize.y + 1,
 			m_surface.rectangle(0, 0, m_gridSize.x + 1, m_gridSize.y + 1));
@@ -63,6 +63,8 @@ void Scene::render()
 	ShaderPrograms::bottomFace->use();
 	ShaderPrograms::bottomFace->setUniform("materialSize", m_materialSize);
 	m_faceMesh.render(6);
+
+	m_activeCutter->render();
 }
 
 void Scene::updateWindowSize()

@@ -1,12 +1,22 @@
 #pragma once
 
-class FaceMesh
+#include "vertex.hpp"
+
+#include <glm/glm.hpp>
+
+#include <vector>
+
+class Mesh
 {
 public:
-	FaceMesh();
-	~FaceMesh();
-	void render(int vertexCount) const;
+	Mesh(const std::vector<Vertex>& vertices);
+	~Mesh();
+	void render() const;
 
 private:
+	int m_vertexCount{};
+	unsigned int m_VBO{};
 	unsigned int m_VAO{};
+
+	void createVBO(const std::vector<Vertex>& vertices);
 };

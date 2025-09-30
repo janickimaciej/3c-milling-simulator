@@ -11,4 +11,5 @@ namespace ShaderPrograms
 	extern std::unique_ptr<const ShaderProgram> topFace;
 	extern std::unique_ptr<const ShaderProgram> sideFace;
 	extern std::unique_ptr<const ShaderProgram> bottomFace;
+	extern std::unique_ptr<const ShaderProgram> cutter;
 }

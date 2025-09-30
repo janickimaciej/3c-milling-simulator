@@ -1,7 +1,8 @@
 #pragma once
 
 #include "camera.hpp"
-#include "mesh.hpp"
+#include "cutter.hpp"
+#include "faceMesh.hpp"
 #include "shaderProgram.hpp"
 #include "surface.hpp"
 #include "texture.hpp"
@@ -26,10 +27,15 @@ public:
 private:
 	Camera m_camera;
 	
-	glm::vec3 m_materialSize{2.0f, 0.5f, 1.0f};
+	glm::vec3 m_materialSize{400, 100, 200};
 	glm::ivec2 m_gridSize{20, 10};
 
 	Surface m_surface;
 	Texture m_heightMap;
 	FaceMesh m_faceMesh{};
+
+	Cutter m_flatCutter{"res/flatCutter.obj"};
+	Cutter m_roundCutter{"res/roundCutter.obj"};
+
+	Cutter* m_activeCutter = &m_roundCutter;
 };

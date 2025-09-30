@@ -161,4 +161,8 @@ void Camera::updateShaders() const
 	ShaderPrograms::bottomFace->use();
 	ShaderPrograms::bottomFace->setUniform("projectionViewMatrix", projectionViewMatrix);
 	ShaderPrograms::bottomFace->setUniform("cameraPos", getPos());
+
+	ShaderPrograms::cutter->use();
+	ShaderPrograms::cutter->setUniform("projectionViewMatrix", projectionViewMatrix);
+	ShaderPrograms::cutter->setUniform("cameraPos", getPos());
 }

@@ -30,7 +30,7 @@ private:
 	glm::vec3 m_targetPos{0, 0, 0};
 	float m_pitchRad = 0;
 	float m_yawRad = 0;
-	float m_radius = 3;
+	float m_radius = 500;
 
 	glm::mat4 m_viewMatrixInverse{1};
 	glm::mat4 m_projectionMatrix{1};
