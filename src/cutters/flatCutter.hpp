@@ -14,5 +14,5 @@ public:
 	virtual void updateElementsPos() override;
 
 private:
-	CutterElement m_cyllinder{"res/flatCutterCyllinder.obj"};
+	CutterElement m_cyllinder{"res/meshes/flatCutterCyllinder.obj"};
 };

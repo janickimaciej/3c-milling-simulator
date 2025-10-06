@@ -22,7 +22,7 @@ private:
 	const glm::ivec2& m_windowSize;
 
 	static constexpr int maxFileNameLength = 32;
-	std::array<char, maxFileNameLength> m_pathsFilePath{};
+	std::array<char, maxFileNameLength> m_toolpathsFilePath{};
 
 	void updateSimulationSpeed();
 	void updateMaterialSize();
@@ -31,7 +31,7 @@ private:
 	void updateCutterDiameter();
 	void updateCutterMillingHeight();
 	void updateMaxMillingDepth();
-	void updatePathsFilePath();
+	void updateToolpathsFilePath();
 	void updateButtons();
 
 	void separator();

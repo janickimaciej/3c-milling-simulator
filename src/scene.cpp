@@ -3,6 +3,7 @@
 #include "objParser.hpp"
 #include "shaderPrograms.hpp"
 #include "side.hpp"
+#include "toolpathsFileParser.hpp"
 #include "vertex.hpp"
 
 #include <cstdlib>
@@ -77,9 +78,9 @@ void Scene::updateWindowSize()
 	m_camera.updateWindowSize();
 }
 
-void Scene::loadPathsFile(const std::string& path)
+void Scene::loadToolpathsFile(const std::string& path)
 {
-	// TODO
+	m_toolpath = std::make_unique<Toolpath>(ToolpathsFileParser::parse(path));
 }
 
 void Scene::mill()

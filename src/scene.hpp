@@ -9,6 +9,7 @@
 #include "shaderProgram.hpp"
 #include "surface.hpp"
 #include "texture.hpp"
+#include "toolpath.hpp"
 
 #include <glm/glm.hpp>
 
@@ -23,7 +24,7 @@ public:
 	void render();
 	void updateWindowSize();
 
-	void loadPathsFile(const std::string& path);
+	void loadToolpathsFile(const std::string& path);
 	void mill();
 	void millInstantly();
 	void reset();
@@ -65,4 +66,6 @@ private:
 
 	CutterType m_cutterType{};
 	Cutter* m_activeCutter{};
+
+	std::unique_ptr<Toolpath> m_toolpath = nullptr;
 };

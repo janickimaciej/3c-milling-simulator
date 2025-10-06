@@ -56,7 +56,7 @@ void GUI::update()
 
 	separator();
 
-	updatePathsFilePath();
+	updateToolpathsFilePath();
 	updateButtons();
 
 	ImGui::PopItemWidth();
@@ -216,14 +216,14 @@ void GUI::updateMaxMillingDepth()
 	}
 }
 
-void GUI::updatePathsFilePath()
+void GUI::updateToolpathsFilePath()
 {
-	ImGui::InputText("##pathsFilePath", m_pathsFilePath.data(), m_pathsFilePath.size());
+	ImGui::InputText("##toolpathsFilePath", m_toolpathsFilePath.data(), m_toolpathsFilePath.size());
 	ImGui::SameLine();
 	if (ImGui::Button("Load paths"))
 	{
-		m_scene.loadPathsFile({m_pathsFilePath.data()});
-		m_pathsFilePath[0] = '\0';
+		m_scene.loadToolpathsFile({m_toolpathsFilePath.data()});
+		m_toolpathsFilePath[0] = '\0';
 	}
 }
 

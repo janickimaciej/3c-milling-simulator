@@ -23,7 +23,7 @@ void Mesh::render() const
 
 void Mesh::createVBO(const std::vector<Vertex>& vertices)
 {
-	m_vertexCount = vertices.size();
+	m_vertexCount = static_cast<int>(vertices.size());
 
 	glGenBuffers(1, &m_VBO);
 

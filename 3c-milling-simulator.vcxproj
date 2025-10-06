@@ -183,6 +183,8 @@
     <ClCompile Include="src\shaderPrograms.cpp" />
     <ClCompile Include="src\surface.cpp" />
     <ClCompile Include="src\texture.cpp" />
+    <ClCompile Include="src\toolpath.cpp" />
+    <ClCompile Include="src\toolpathsFileParser.cpp" />
     <ClCompile Include="src\window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -205,6 +207,8 @@
     <ClInclude Include="src\faceMesh.hpp" />
     <ClInclude Include="src\mesh.hpp" />
     <ClInclude Include="src\objParser.hpp" />
+    <ClInclude Include="src\toolpath.hpp" />
+    <ClInclude Include="src\toolpathsFileParser.hpp" />
     <ClInclude Include="src\scene.hpp" />
     <ClInclude Include="src\shaderProgram.hpp" />
     <ClInclude Include="src\shaderPrograms.hpp" />
