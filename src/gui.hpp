@@ -12,7 +12,27 @@ public:
 	static constexpr int width = 272;
 
 	GUI(GLFWwindow* window, Scene& scene, const glm::ivec2& windowSize);
+	~GUI();
 
 	void update();
 	void render();
+
+private:
+	Scene& m_scene;
+	const glm::ivec2& m_windowSize;
+
+	static constexpr int maxFileNameLength = 32;
+	std::array<char, maxFileNameLength> m_pathsFilePath{};
+
+	void updateSimulationSpeed();
+	void updateMaterialSize();
+	void updateGridSize();
+	void updateCutterType();
+	void updateCutterDiameter();
+	void updateCutterMillingHeight();
+	void updateMaxMillingDepth();
+	void updatePathsFilePath();
+	void updateButtons();
+
+	void separator();
 };

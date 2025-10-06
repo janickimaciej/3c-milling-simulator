@@ -58,7 +58,7 @@ void calcPos()
 	{
 		axisSize = gridSize.x;
 	}
-	
+
 	float axisPos = float(segmentIndex) / axisSize;
 	if (vertexQuadIndex == 1 || vertexQuadIndex == 2 || vertexQuadIndex == 4)
 	{

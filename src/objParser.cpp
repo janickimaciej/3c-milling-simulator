@@ -14,7 +14,7 @@ std::vector<Vertex> ObjParser::parse(const std::string& path)
 		std::cerr << "File does not exist:\n" << path << '\n';
 		return std::vector<Vertex>{};
 	}
-		
+
 	std::vector<Vertex> vertices{};
 
 	std::vector<glm::vec3> positions{};
@@ -130,6 +130,6 @@ std::array<Vertex, 3> ObjParser::parseTriangle(const std::string_view line,
 		triangle[vertexIndex].pos = positions[positionIndex - 1];
 		triangle[vertexIndex].normalVec = normalVectors[normalVectorIndex - 1];
 	}
-		
+
 	return triangle;
 }

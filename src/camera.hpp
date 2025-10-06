@@ -14,7 +14,7 @@ public:
 	void updateWindowSize();
 	float getFOVYDeg() const;
 	void setFOVYDeg(float fovYDeg);
-	
+
 	void moveX(float x);
 	void moveY(float y);
 	void addPitch(float pitchRad);

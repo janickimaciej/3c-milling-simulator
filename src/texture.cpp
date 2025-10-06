@@ -54,7 +54,7 @@ unsigned int Texture::getId() const
 void Texture::resize(const glm::ivec2& size, const float* data)
 {
 	m_size = size;
-	
+
 	glBindTexture(GL_TEXTURE_2D, m_id);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, m_size.x, m_size.y, 0, GL_RED, GL_FLOAT, data);
 	glBindTexture(GL_TEXTURE_2D, 0);

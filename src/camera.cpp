@@ -135,7 +135,7 @@ void Camera::updateProjectionMatrix()
 	float aspectRatio = static_cast<float>(m_windowSize.x) / m_windowSize.y;
 	float fovYRad = glm::radians(m_fovYDeg);
 	float cot = std::cos(fovYRad / 2) / std::sin(fovYRad / 2);
-	
+
 	m_projectionMatrix =
 	{
 		cot / aspectRatio, 0, 0, 0,

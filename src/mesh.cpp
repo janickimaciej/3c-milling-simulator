@@ -26,7 +26,7 @@ void Mesh::createVBO(const std::vector<Vertex>& vertices)
 	m_vertexCount = vertices.size();
 
 	glGenBuffers(1, &m_VBO);
-	
+
 	glBindVertexArray(m_VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);

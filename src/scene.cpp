@@ -1,9 +1,12 @@
 #include "scene.hpp"
 
+#include "objParser.hpp"
 #include "shaderPrograms.hpp"
 #include "side.hpp"
+#include "vertex.hpp"
 
 #include <cstdlib>
+#include <iterator>
 
 static constexpr float fovYDeg = 60.0f;
 static constexpr float nearPlane = 10.0f;
@@ -16,6 +19,8 @@ Scene::Scene(const glm::ivec2& windowSize) :
 {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+
+	setCutterType(CutterType::flat);
 }
 
 void Scene::update()
@@ -72,6 +77,26 @@ void Scene::updateWindowSize()
 	m_camera.updateWindowSize();
 }
 
+void Scene::loadPathsFile(const std::string& path)
+{
+	// TODO
+}
+
+void Scene::mill()
+{
+	// TODO
+}
+
+void Scene::millInstantly()
+{
+	// TODO
+}
+
+void Scene::reset()
+{
+	// TODO
+}
+
 void Scene::moveXCamera(float x)
 {
 	m_camera.moveX(x);
@@ -95,4 +120,84 @@ void Scene::addYawCamera(float yawRad)
 void Scene::zoomCamera(float zoom)
 {
 	m_camera.zoom(zoom);
+}
+
+float Scene::getSimulationSpeed() const
+{
+	return m_simulationSpeed;
+}
+
+void Scene::setSimulationSpeed(float simulationSpeed)
+{
+	m_simulationSpeed = simulationSpeed;
+}
+
+glm::vec3 Scene::getMaterialSize() const
+{
+	return m_materialSize;
+}
+
+void Scene::setMaterialSize(const glm::vec3& materialSize)
+{
+	m_materialSize = materialSize;
+}
+
+glm::ivec2 Scene::getGridSize() const
+{
+	return m_gridSize;
+}
+
+void Scene::setGridSize(const glm::ivec2& gridSize)
+{
+	m_gridSize = gridSize;
+	m_surface.resize(m_gridSize);
+	m_heightMap.resize({m_gridSize.x + 1, m_gridSize.y + 1}, m_surface.surface().data());
+}
+
+CutterType Scene::getCutterType() const
+{
+	return m_cutterType;
+}
+
+void Scene::setCutterType(CutterType cutterType)
+{
+	m_cutterType = cutterType;
+	if (cutterType == CutterType::flat)
+	{
+		m_activeCutter = &m_flatCutter;
+	}
+	else
+	{
+		m_activeCutter = &m_roundCutter;
+	}
+}
+
+float Scene::getCutterDiameter() const
+{
+	return m_activeCutter->getDiameter();
+}
+
+void Scene::setCutterDiameter(float diameter)
+{
+	m_activeCutter->setDiameter(diameter);
+}
+
+float Scene::getCutterMillingHeight() const
+{
+	return m_activeCutter->getMillingHeight();
+}
+
+void Scene::setCutterMillingHeight(float millingHeight)
+{
+	m_activeCutter->setMillingHeight(millingHeight);
+}
+
+float Scene::getMaxMillingDepth() const
+{
+	return m_activeCutter->getMaxMillingDepth();
+}
+
+void Scene::setMaxMillingDepth(float maxMillingDepth)
+{
+	m_activeCutter->setMaxMillingDepth(maxMillingDepth);
 }

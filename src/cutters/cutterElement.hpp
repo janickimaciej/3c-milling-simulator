@@ -7,19 +7,17 @@
 #include <memory>
 #include <string>
 
-class Cutter
+class CutterElement
 {
 public:
-	Cutter(const std::string& meshPath);
+	CutterElement(const std::string& path);
 	void render() const;
-	void setRadius(float radius);
-	void setMillingHeight(float millingHeight);
+	void setScale(const glm::vec3& scale);
 	void setPos(const glm::vec3& pos);
 
 private:
-	float m_radius = 10;
-	float m_millingHeight = 20;
-	glm::vec3 m_pos{0, 100, 0};
+	glm::vec3 m_pos{};
+	glm::vec3 m_scale{};
 	glm::mat4 m_modelMatrix{};
 
 	std::unique_ptr<Mesh> m_mesh{};
