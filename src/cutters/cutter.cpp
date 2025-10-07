@@ -3,6 +3,15 @@
 #include "objParser.hpp"
 #include "shaderPrograms.hpp"
 
+Cutter::Cutter(CutterType type) :
+	m_type{type}
+{ }
+
+CutterType Cutter::type() const
+{
+	return m_type;
+}
+
 void Cutter::render() const
 {
 	ShaderPrograms::cutter->use();
@@ -41,6 +50,16 @@ void Cutter::setMaxMillingDepth(float maxMillingDepth)
 {
 	m_maxMillingDepth = maxMillingDepth;
 	updateElementsScale();
+}
+
+float Cutter::getSpeed() const
+{
+	return m_speed;
+}
+
+void Cutter::setSpeed(float speed)
+{
+	m_speed = speed;
 }
 
 glm::vec3 Cutter::getPos() const

@@ -1,6 +1,7 @@
 #include "cutters/flatCutter.hpp"
 
-FlatCutter::FlatCutter()
+FlatCutter::FlatCutter() :
+	Cutter{CutterType::flat}
 {
 	updateElementsScale();
 	updateElementsPos();

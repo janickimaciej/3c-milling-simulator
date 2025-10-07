@@ -26,16 +26,9 @@ Scene::Scene(const glm::ivec2& windowSize) :
 
 void Scene::update()
 {
-	static int ind = 0;
-
-	if (ind < (m_gridSize.x + 1) * (m_gridSize.y + 1))
+	if (m_simulation)
 	{
-		float depth = static_cast<float>(std::rand()) / RAND_MAX * 10;
-		m_surface[ind % (m_gridSize.x + 1)][ind / (m_gridSize.x + 1)] = -depth;
-		m_heightMap.update(0, 0, m_gridSize.x + 1, m_gridSize.y + 1,
-			m_surface.rectangle(0, 0, m_gridSize.x + 1, m_gridSize.y + 1));
-
-		++ind;
+		m_simulation->step(*m_activeCutter);
 	}
 }
 
@@ -80,12 +73,24 @@ void Scene::updateWindowSize()
 
 void Scene::loadToolpathsFile(const std::string& path)
 {
-	m_toolpath = std::make_unique<Toolpath>(ToolpathsFileParser::parse(path));
+	m_toolpath = std::make_unique<Toolpath>(ToolpathsFileParser::parse("res/toolpaths/" + path));
+	m_simulation = std::make_unique<Simulation>(*m_toolpath);
 }
 
 void Scene::mill()
 {
-	// TODO
+	if (m_simulation)
+	{
+		m_simulation->start();
+	}
+}
+
+void Scene::stop()
+{
+	if (m_simulation)
+	{
+		m_simulation->stop();
+	}
 }
 
 void Scene::millInstantly()
@@ -157,12 +162,11 @@ void Scene::setGridSize(const glm::ivec2& gridSize)
 
 CutterType Scene::getCutterType() const
 {
-	return m_cutterType;
+	return m_activeCutter->type();
 }
 
 void Scene::setCutterType(CutterType cutterType)
 {
-	m_cutterType = cutterType;
 	if (cutterType == CutterType::flat)
 	{
 		m_activeCutter = &m_flatCutter;
@@ -201,4 +205,14 @@ float Scene::getMaxMillingDepth() const
 void Scene::setMaxMillingDepth(float maxMillingDepth)
 {
 	m_activeCutter->setMaxMillingDepth(maxMillingDepth);
+}
+
+float Scene::getCutterSpeed() const
+{
+	return m_activeCutter->getSpeed();
+}
+
+void Scene::setCutterSpeed(float speed)
+{
+	m_activeCutter->setSpeed(speed);
 }

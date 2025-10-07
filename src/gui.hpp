@@ -31,6 +31,7 @@ private:
 	void updateCutterDiameter();
 	void updateCutterMillingHeight();
 	void updateMaxMillingDepth();
+	void updateCutterSpeed();
 	void updateToolpathsFilePath();
 	void updateButtons();
 

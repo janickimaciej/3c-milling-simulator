@@ -7,6 +7,7 @@
 #include "cutters/roundCutter.hpp"
 #include "faceMesh.hpp"
 #include "shaderProgram.hpp"
+#include "simulation.hpp"
 #include "surface.hpp"
 #include "texture.hpp"
 #include "toolpath.hpp"
@@ -26,6 +27,7 @@ public:
 
 	void loadToolpathsFile(const std::string& path);
 	void mill();
+	void stop();
 	void millInstantly();
 	void reset();
 
@@ -49,6 +51,8 @@ public:
 	void setCutterMillingHeight(float millingHeight);
 	float getMaxMillingDepth() const;
 	void setMaxMillingDepth(float maxMillingDepth);
+	float getCutterSpeed() const;
+	void setCutterSpeed(float speed);
 
 private:
 	Camera m_camera;
@@ -64,8 +68,8 @@ private:
 	FlatCutter m_flatCutter{};
 	RoundCutter m_roundCutter{};
 
-	CutterType m_cutterType{};
 	Cutter* m_activeCutter{};
 
 	std::unique_ptr<Toolpath> m_toolpath = nullptr;
+	std::unique_ptr<Simulation> m_simulation = nullptr;
 };

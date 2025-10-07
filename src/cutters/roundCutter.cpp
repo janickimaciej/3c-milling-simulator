@@ -1,6 +1,7 @@
 #include "cutters/roundCutter.hpp"
 
-RoundCutter::RoundCutter()
+RoundCutter::RoundCutter() :
+	Cutter{CutterType::round}
 {
 	updateElementsScale();
 	updateElementsPos();

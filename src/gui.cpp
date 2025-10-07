@@ -53,6 +53,7 @@ void GUI::update()
 	updateCutterDiameter();
 	updateCutterMillingHeight();
 	updateMaxMillingDepth();
+	updateCutterSpeed();
 
 	separator();
 
@@ -216,6 +217,24 @@ void GUI::updateMaxMillingDepth()
 	}
 }
 
+void GUI::updateCutterSpeed()
+{
+	static constexpr float stepPrecision = 0.1f;
+	static const std::string format = "%.1f";
+
+	float speed = m_scene.getCutterSpeed();
+	float prevSpeed = speed;
+
+	ImGui::InputFloat("speed##cutter", &speed, stepPrecision, stepPrecision, format.c_str());
+
+	speed = std::max(speed, 0.1f);
+
+	if (speed != prevSpeed)
+	{
+		m_scene.setCutterSpeed(speed);
+	}
+}
+
 void GUI::updateToolpathsFilePath()
 {
 	ImGui::InputText("##toolpathsFilePath", m_toolpathsFilePath.data(), m_toolpathsFilePath.size());
@@ -232,6 +251,10 @@ void GUI::updateButtons()
 	if (ImGui::Button("Mill"))
 	{
 		m_scene.mill();
+	}
+	if (ImGui::Button("Stop"))
+	{
+		m_scene.stop();
 	}
 	if (ImGui::Button("Mill instantly"))
 	{

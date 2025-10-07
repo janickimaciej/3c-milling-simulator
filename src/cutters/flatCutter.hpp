@@ -2,6 +2,7 @@
 
 #include "cutters/cutterElement.hpp"
 #include "cutters/cutter.hpp"
+#include "cutters/cutterType.hpp"
 #include "objParser.hpp"
 
 class FlatCutter : public Cutter
