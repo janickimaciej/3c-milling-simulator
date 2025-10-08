@@ -1,5 +1,7 @@
 #include "simulation.hpp"
 
+#include <iostream>
+
 Simulation::Simulation(const Toolpath& toolpath) :
 	m_toolpath{toolpath}
 { }
@@ -64,74 +66,110 @@ void Simulation::stop()
 void Simulation::millSegment(const glm::vec3& materialSize, const glm::ivec2& gridSize,
 	Surface& surface, const Cutter& cutter, Texture& heightMap, const Toolpath::Segment& segment)
 {
-	glm::vec2 relativeMin{1.0f, 1.0f};
-	glm::vec2 relativeMax{0.0f, 0.0f};
+	glm::ivec2 minMilledGrid = gridSize;
+	glm::ivec2 maxMilledGrid{0, 0};
 
 	glm::vec3 pos1 = segment.pos(0);
 	glm::vec3 pos2 = segment.pos(1);
-	glm::vec2 pos1Relative = posToRelativePos(materialSize, pos1);
-	glm::vec2 pos2Relative = posToRelativePos(materialSize, pos2);
+	glm::vec2 pos1Grid = posToGridPos(materialSize, gridSize, pos1);
+	glm::vec2 pos2Grid = posToGridPos(materialSize, gridSize, pos2);
 
 	float dX = pos2.x - pos1.x;
 	float dZ = pos2.z - pos1.z;
-	float dXRelative = pos2Relative.x - pos1Relative.x;
-	float dYRelative = pos2Relative.y - pos1Relative.y;
+	float dXGrid = pos2Grid.x - pos1Grid.x;
+	float dYGrid = pos2Grid.y - pos1Grid.y;
 
-	if (dXRelative > dYRelative)
+	if (dXGrid > dYGrid)
 	{
 		float width = cutter.getDiameter() * std::sqrt(1 + std::pow(dZ / dX, 2.0f));
-		float widthRelative = width / materialSize.z;
+		float widthGrid = width / materialSize.z * gridSize.y;
 
-		float a = dYRelative / dXRelative;
-		float b = (pos2Relative.x * pos1Relative.y - pos1Relative.x * pos2Relative.y) / dXRelative;
-		float bMin = b - widthRelative / 2.0f;
-		float bMax = b + widthRelative / 2.0f;
+		float a = dYGrid / dXGrid;
+		float b = (pos2Grid.x * pos1Grid.y - pos1Grid.x * pos2Grid.y) / dXGrid;
+		float bMin = b - widthGrid / 2.0f;
+		float bMax = b + widthGrid / 2.0f;
 
-		float xRelativeMin = (pos1Relative.x < pos2Relative.x ? pos1Relative.x : pos2Relative.x) -
-			cutter.getDiameter() / materialSize.x;
-		float xRelativeMax = (pos1Relative.x > pos2Relative.x ? pos1Relative.x : pos2Relative.x) +
-			cutter.getDiameter() / materialSize.x;
+		float xGridMin = std::min(pos1Grid.x, pos2Grid.x) -
+			cutter.getDiameter() / 2.0f / materialSize.x * gridSize.x;
+		float xGridMax = std::max(pos1Grid.x, pos2Grid.x) +
+			cutter.getDiameter() / 2.0f / materialSize.x * gridSize.x;
 
-		// TODO: fix x and y, scale with gridSize; check if they don't exceed gridSize
-		for (int x = std::ceil(xRelativeMin); x <= std::floor(xRelativeMax); ++x)
+		int xStart = std::max(static_cast<int>(std::ceil(xGridMin)), 0);
+		int xEnd = std::min(static_cast<int>(std::floor(xGridMax)), gridSize.x);
+		for (int x = xStart; x <= xEnd; ++x)
 		{
-			for (int y = std::ceil(a * x + bMin); y <= std::floor(a * x + bMax); ++y)
+			int yStart = std::max(static_cast<int>(std::ceil(a * x + bMin)), 0);
+			int yEnd = std::min(static_cast<int>(std::floor(a * x + bMax)), gridSize.y);
+			for (int y = yStart; y <= yEnd; ++y)
 			{
-
+				if (millPoint(materialSize, gridSize, surface, cutter, x, y))
+				{
+					minMilledGrid.x = std::min(minMilledGrid.x, x);
+					maxMilledGrid.x = std::max(maxMilledGrid.x, x);
+					minMilledGrid.y = std::min(minMilledGrid.y, y);
+					maxMilledGrid.y = std::max(maxMilledGrid.y, y);
+				}
 			}
 		}
 	}
 	else
 	{
 		float width = cutter.getDiameter() * std::sqrt(1 + std::pow(dX / dZ, 2.0f));
-		float widthRelative = width / materialSize.x;
+		float widthGrid = width / materialSize.x * gridSize.x;
 
-		float a = dYRelative / dXRelative;
-		float b = (pos2Relative.x * pos1Relative.y - pos1Relative.x * pos2Relative.y) / dXRelative;
-		float bMin = b - widthRelative / 2.0f;
-		float bMax = b + widthRelative / 2.0f;
+		float a = dXGrid / dYGrid;
+		float b = (pos2Grid.y * pos1Grid.x - pos1Grid.y * pos2Grid.x) / dYGrid;
+		float bMin = b - widthGrid / 2.0f;
+		float bMax = b + widthGrid / 2.0f;
 
-		float yRelativeMin = (pos1Relative.y < pos2Relative.y ? pos1Relative.y : pos2Relative.y) -
-			cutter.getDiameter() / materialSize.z;
-		float yRelativeMax = (pos1Relative.y > pos2Relative.y ? pos1Relative.y : pos2Relative.y) +
-			cutter.getDiameter() / materialSize.z;
+		float yGridMin = std::min(pos1Grid.y, pos2Grid.y) -
+			cutter.getDiameter() / 2.0f / materialSize.y * gridSize.y;
+		float yGridMax = std::max(pos1Grid.y, pos2Grid.y) +
+			cutter.getDiameter() / 2.0f / materialSize.y * gridSize.y;
 
-		for (int y = std::ceil(yRelativeMin); y <= std::floor(yRelativeMax); ++y)
+		int yStart = std::max(static_cast<int>(std::ceil(yGridMin)), 0);
+		int yEnd = std::min(static_cast<int>(std::floor(yGridMax)), gridSize.y);
+		for (int y = yStart; y <= yEnd; ++y)
 		{
-			for (int x = std::ceil(a * y + bMin); x <= std::floor(a * y + bMax); ++x)
+			int xStart = std::max(static_cast<int>(std::ceil(a * y + bMin)), 0);
+			int xEnd = std::min(static_cast<int>(std::floor(a * y + bMax)), gridSize.x);
+			for (int x = xStart; x <= xEnd; ++x)
 			{
-
+				if (millPoint(materialSize, gridSize, surface, cutter, x, y))
+				{
+					minMilledGrid.x = std::min(minMilledGrid.x, x);
+					maxMilledGrid.x = std::max(maxMilledGrid.x, x);
+					minMilledGrid.y = std::min(minMilledGrid.y, y);
+					maxMilledGrid.y = std::max(maxMilledGrid.y, y);
+				}
 			}
 		}
 	}
+
+	if (minMilledGrid.x <= maxMilledGrid.x && minMilledGrid.y <= maxMilledGrid.y)
+	{
+		heightMap.update(minMilledGrid.x, minMilledGrid.y, maxMilledGrid.x - minMilledGrid.x + 1,
+			maxMilledGrid.y - maxMilledGrid.y + 1, surface);
+	}
 }
 
-glm::vec3 Simulation::relativePosToPos(const glm::vec3& materialSize, const glm::vec2& relativePos)
+bool Simulation::millPoint(const glm::vec3& materialSize, const glm::ivec2& gridSize,
+	Surface& surface, const Cutter& cutter, int xGrid, int yGrid)
 {
-	return {(relativePos.x - 0.5f) * materialSize.x, 0, -(relativePos.y - 0.5f) * materialSize.z};
+	surface[xGrid][yGrid] = 0;
+	return true;
 }
 
-glm::vec2 Simulation::posToRelativePos(const glm::vec3& materialSize, const glm::vec3& pos)
+glm::vec3 Simulation::gridPosToPos(const glm::vec3& materialSize, const glm::ivec2& gridSize,
+	const glm::vec2& gridPos)
 {
-	return {pos.x / materialSize.x + 0.5f, -pos.z / materialSize.z + 0.5f};
+	return {(gridPos.x / gridSize.x - 0.5f) * materialSize.x, 0,
+		-(gridPos.y / gridSize.y - 0.5f) * materialSize.z};
+}
+
+glm::vec2 Simulation::posToGridPos(const glm::vec3& materialSize, const glm::ivec2& gridSize,
+	const glm::vec3& pos)
+{
+	return {(pos.x / materialSize.x + 0.5f) * gridSize.x,
+		(-pos.z / materialSize.z + 0.5f) * gridSize.y};
 }

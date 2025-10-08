@@ -60,11 +60,10 @@ void Texture::resize(const glm::ivec2& size, const float* data)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Texture::update(int xOffset, int yOffset, int width, int height,
-	const std::vector<float>& data) const
+void Texture::update(int xOffset, int yOffset, int width, int height, const Surface& surface) const
 {
 	glBindTexture(GL_TEXTURE_2D, m_id);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, xOffset, yOffset, width, height, GL_RED, GL_FLOAT,
-		data.data());
+		surface.rectangle(xOffset, yOffset, width, height).data());
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

@@ -26,6 +26,10 @@ private:
 	static void millSegment(const glm::vec3& materialSize, const glm::ivec2& gridSize,
 		Surface& surface, const Cutter& cutter, Texture& heightMap,
 		const Toolpath::Segment& segment);
-	static glm::vec3 relativePosToPos(const glm::vec3& materialSize, const glm::vec2& relativePos);
-	static glm::vec2 posToRelativePos(const glm::vec3& materialSize, const glm::vec3& pos);
+	static bool millPoint(const glm::vec3& materialSize, const glm::ivec2& gridSize,
+		Surface& surface, const Cutter& cutter, int xGrid, int yGrid);
+	static glm::vec3 gridPosToPos(const glm::vec3& materialSize, const glm::ivec2& gridSize,
+		const glm::vec2& gridPos);
+	static glm::vec2 posToGridPos(const glm::vec3& materialSize, const glm::ivec2& gridSize,
+		const glm::vec3& pos);
 };

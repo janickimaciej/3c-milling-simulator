@@ -1,5 +1,7 @@
 #pragma once
 
+#include "surface.hpp"
+
 #include <glm/glm.hpp>
 
 #include <vector>
@@ -18,8 +20,7 @@ public:
 	void use() const;
 	unsigned int getId() const;
 	void resize(const glm::ivec2& size, const float* data);
-	void update(int xOffset, int yOffset, int width, int height,
-		const std::vector<float>& data) const;
+	void update(int xOffset, int yOffset, int width, int height, const Surface& surface) const;
 
 private:
 	bool m_invalid = false;
