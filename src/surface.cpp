@@ -17,15 +17,15 @@ float& Surface::Column::operator[](int y)
 	return m_surface.m_surface[m_surface.index(m_x, y)];
 }
 
-Surface::Surface(const glm::ivec2& size)
+Surface::Surface(const glm::ivec2& size, float height)
 {
-	resize(size);
+	resize(size, height);
 }
 
-void Surface::resize(const glm::ivec2& size)
+void Surface::resize(const glm::ivec2& size, float height)
 {
 	m_size = size;
-	m_surface = std::vector<float>((size.x + 1) * (size.y + 1), 0);
+	m_surface = std::vector<float>((size.x + 1) * (size.y + 1), height);
 
 	m_columns.clear();
 	for (int x = 0; x <= m_size.x; ++x)

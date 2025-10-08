@@ -60,7 +60,7 @@ glm::vec3 ToolpathsFileParser::parsePos(const std::string_view line)
 	}
 	pos[component] = std::stof(number);
 
-	return pos;
+	return {pos.x, pos.z, -pos.y};
 }
 
 bool ToolpathsFileParser::isDigit(char c)

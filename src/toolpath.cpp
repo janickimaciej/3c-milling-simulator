@@ -21,7 +21,7 @@ Toolpath::Toolpath(const std::vector<glm::vec3>& poss) :
 
 int Toolpath::segmentCount() const
 {
-	return static_cast<int>(m_poss.size());
+	return static_cast<int>(m_poss.size() - 1);
 }
 
 Toolpath::Segment Toolpath::getSegment(int index) const

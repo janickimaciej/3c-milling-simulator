@@ -58,7 +58,7 @@ private:
 	Camera m_camera;
 
 	float m_simulationSpeed = 1;
-	glm::vec3 m_materialSize{400, 100, 200};
+	glm::vec3 m_materialSize{200, 50, 400};
 	glm::ivec2 m_gridSize{20, 10};
 
 	Surface m_surface;

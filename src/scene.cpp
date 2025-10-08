@@ -15,7 +15,7 @@ static constexpr float farPlane = 10000.0f;
 
 Scene::Scene(const glm::ivec2& windowSize) :
 	m_camera{windowSize, fovYDeg, nearPlane, farPlane},
-	m_surface{m_gridSize},
+	m_surface{m_gridSize, m_materialSize.y},
 	m_heightMap{{m_gridSize.x + 1, m_gridSize.y + 1}, m_surface.surface().data()}
 {
 	glEnable(GL_DEPTH_TEST);
@@ -28,7 +28,7 @@ void Scene::update()
 {
 	if (m_simulation)
 	{
-		m_simulation->step(*m_activeCutter);
+		m_simulation->step(m_materialSize, m_gridSize, m_surface, *m_activeCutter, m_heightMap);
 	}
 }
 
@@ -156,7 +156,7 @@ glm::ivec2 Scene::getGridSize() const
 void Scene::setGridSize(const glm::ivec2& gridSize)
 {
 	m_gridSize = gridSize;
-	m_surface.resize(m_gridSize);
+	m_surface.resize(m_gridSize, m_materialSize.y);
 	m_heightMap.resize({m_gridSize.x + 1, m_gridSize.y + 1}, m_surface.surface().data());
 }
 

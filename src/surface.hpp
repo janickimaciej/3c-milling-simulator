@@ -19,9 +19,9 @@ public:
 		int m_x{};
 	};
 
-	Surface(const glm::ivec2& size);
+	Surface(const glm::ivec2& size, float height);
 
-	void resize(const glm::ivec2& size);
+	void resize(const glm::ivec2& size, float height);
 	const Column& operator[](int x) const;
 	Column& operator[](int x);
 	const std::vector<float>& surface() const;

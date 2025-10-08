@@ -92,7 +92,7 @@ void calcPos()
 	pos.xz = relativeToPos(relativePos);
 	if (vertexQuadIndex == 0 || vertexQuadIndex == 1 || vertexQuadIndex == 3)
 	{
-		pos.y = -materialSize.y;
+		pos.y = 0;
 	}
 	else
 	{
