@@ -28,7 +28,8 @@ void Scene::update()
 {
 	if (m_simulation)
 	{
-		m_simulation->step(m_materialSize, m_gridSize, m_surface, *m_activeCutter, m_heightMap);
+		m_simulation->step(m_simulationSpeed, m_materialSize, m_gridSize, m_surface,
+			*m_activeCutter, m_heightMap);
 	}
 }
 
@@ -95,12 +96,17 @@ void Scene::stop()
 
 void Scene::millInstantly()
 {
-	// TODO
+	if (m_simulation)
+	{
+		m_simulation->millInstantly(m_materialSize, m_gridSize, m_surface, *m_activeCutter,
+			m_heightMap);
+	}
 }
 
 void Scene::reset()
 {
-	// TODO
+	m_surface.reset(m_gridSize, m_materialSize.y);
+	m_heightMap.reset({m_gridSize.x + 1, m_gridSize.y + 1}, m_surface.surface().data());
 }
 
 void Scene::moveXCamera(float x)
@@ -156,8 +162,7 @@ glm::ivec2 Scene::getGridSize() const
 void Scene::setGridSize(const glm::ivec2& gridSize)
 {
 	m_gridSize = gridSize;
-	m_surface.resize(m_gridSize, m_materialSize.y);
-	m_heightMap.resize({m_gridSize.x + 1, m_gridSize.y + 1}, m_surface.surface().data());
+	reset();
 }
 
 CutterType Scene::getCutterType() const

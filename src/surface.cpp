@@ -19,10 +19,10 @@ float& Surface::Column::operator[](int y)
 
 Surface::Surface(const glm::ivec2& size, float height)
 {
-	resize(size, height);
+	reset(size, height);
 }
 
-void Surface::resize(const glm::ivec2& size, float height)
+void Surface::reset(const glm::ivec2& size, float height)
 {
 	m_size = size;
 	m_surface = std::vector<float>((size.x + 1) * (size.y + 1), height);

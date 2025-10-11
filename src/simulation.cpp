@@ -1,7 +1,5 @@
 #include "simulation.hpp"
 
-#include <iostream>
-
 Simulation::Simulation(const Toolpath& toolpath) :
 	m_toolpath{toolpath}
 { }
@@ -12,8 +10,8 @@ void Simulation::start()
 	m_running = true;
 }
 
-void Simulation::step(const glm::vec3& materialSize, const glm::ivec2& gridSize, Surface& surface,
-	Cutter& cutter, Texture& heightMap)
+void Simulation::step(float simulationSpeed, const glm::vec3& materialSize,
+	const glm::ivec2& gridSize, Surface& surface, Cutter& cutter, Texture& heightMap)
 {
 	if (!m_running)
 	{
@@ -21,16 +19,18 @@ void Simulation::step(const glm::vec3& materialSize, const glm::ivec2& gridSize,
 	}
 
 	std::chrono::time_point<std::chrono::system_clock> t = std::chrono::system_clock::now();
-	float dt = static_cast<std::chrono::duration<float>>(t - m_t).count();
+	float dt = static_cast<std::chrono::duration<float>>(t - m_t).count() * simulationSpeed;
 	m_t = t;
 
 	float dist = cutter.getSpeed() * dt;
-	while (dist > 0)
+	static constexpr float eps = 1e-6f;
+	while (dist > eps)
 	{
 		if (m_segmentIndex == m_toolpath.segmentCount())
 		{
 			m_running = false;
 			m_segmentIndex = 0;
+			return;
 		}
 
 		Toolpath::Segment segment = m_toolpath.getSegment(m_segmentIndex);
@@ -63,6 +63,16 @@ void Simulation::stop()
 	m_running = false;
 }
 
+void Simulation::millInstantly(const glm::vec3& materialSize, const glm::ivec2& gridSize,
+	Surface& surface, const Cutter& cutter, Texture& heightMap)
+{
+	for (int segment = 0; segment < m_toolpath.segmentCount(); ++segment)
+	{
+		millSegment(materialSize, gridSize, surface, cutter, heightMap,
+			m_toolpath.getSegment(segment));
+	}
+}
+
 void Simulation::millSegment(const glm::vec3& materialSize, const glm::ivec2& gridSize,
 	Surface& surface, const Cutter& cutter, Texture& heightMap, const Toolpath::Segment& segment)
 {
@@ -79,7 +89,7 @@ void Simulation::millSegment(const glm::vec3& materialSize, const glm::ivec2& gr
 	float dXGrid = pos2Grid.x - pos1Grid.x;
 	float dYGrid = pos2Grid.y - pos1Grid.y;
 
-	if (dXGrid > dYGrid)
+	if (std::abs(dXGrid) > std::abs(dYGrid))
 	{
 		float width = cutter.getDiameter() * std::sqrt(1 + std::pow(dZ / dX, 2.0f));
 		float widthGrid = width / materialSize.z * gridSize.y;
@@ -102,7 +112,13 @@ void Simulation::millSegment(const glm::vec3& materialSize, const glm::ivec2& gr
 			int yEnd = std::min(static_cast<int>(std::floor(a * x + bMax)), gridSize.y);
 			for (int y = yStart; y <= yEnd; ++y)
 			{
-				if (millPoint(materialSize, gridSize, surface, cutter, x, y))
+				if (!isPointInsideMillProjection(gridPosToPos(materialSize, gridSize, {x, y}),
+					cutter, segment))
+				{
+					continue;
+				}
+
+				if (millPoint(materialSize, gridSize, surface, cutter, {x, y}))
 				{
 					minMilledGrid.x = std::min(minMilledGrid.x, x);
 					maxMilledGrid.x = std::max(maxMilledGrid.x, x);
@@ -123,9 +139,9 @@ void Simulation::millSegment(const glm::vec3& materialSize, const glm::ivec2& gr
 		float bMax = b + widthGrid / 2.0f;
 
 		float yGridMin = std::min(pos1Grid.y, pos2Grid.y) -
-			cutter.getDiameter() / 2.0f / materialSize.y * gridSize.y;
+			cutter.getDiameter() / 2.0f / materialSize.z * gridSize.y;
 		float yGridMax = std::max(pos1Grid.y, pos2Grid.y) +
-			cutter.getDiameter() / 2.0f / materialSize.y * gridSize.y;
+			cutter.getDiameter() / 2.0f / materialSize.z * gridSize.y;
 
 		int yStart = std::max(static_cast<int>(std::ceil(yGridMin)), 0);
 		int yEnd = std::min(static_cast<int>(std::floor(yGridMax)), gridSize.y);
@@ -135,7 +151,13 @@ void Simulation::millSegment(const glm::vec3& materialSize, const glm::ivec2& gr
 			int xEnd = std::min(static_cast<int>(std::floor(a * y + bMax)), gridSize.x);
 			for (int x = xStart; x <= xEnd; ++x)
 			{
-				if (millPoint(materialSize, gridSize, surface, cutter, x, y))
+				if (!isPointInsideMillProjection(gridPosToPos(materialSize, gridSize, {x, y}),
+					cutter, segment))
+				{
+					continue;
+				}
+
+				if (millPoint(materialSize, gridSize, surface, cutter, {x, y}))
 				{
 					minMilledGrid.x = std::min(minMilledGrid.x, x);
 					maxMilledGrid.x = std::max(maxMilledGrid.x, x);
@@ -149,14 +171,39 @@ void Simulation::millSegment(const glm::vec3& materialSize, const glm::ivec2& gr
 	if (minMilledGrid.x <= maxMilledGrid.x && minMilledGrid.y <= maxMilledGrid.y)
 	{
 		heightMap.update(minMilledGrid.x, minMilledGrid.y, maxMilledGrid.x - minMilledGrid.x + 1,
-			maxMilledGrid.y - maxMilledGrid.y + 1, surface);
+			maxMilledGrid.y - minMilledGrid.y + 1, surface);
 	}
 }
 
 bool Simulation::millPoint(const glm::vec3& materialSize, const glm::ivec2& gridSize,
-	Surface& surface, const Cutter& cutter, int xGrid, int yGrid)
+	Surface& surface, const Cutter& cutter, const glm::ivec2& gridPoint)
 {
-	surface[xGrid][yGrid] = 0;
+	surface[gridPoint.x][gridPoint.y] = 0;
+	return true;
+}
+
+bool Simulation::isPointInsideMillProjection(glm::vec3 point, const Cutter& cutter,
+	const Toolpath::Segment& segment)
+{
+	point.y = 0;
+	glm::vec3 start = segment.pos(0);
+	start.y = 0;
+	glm::vec3 end = segment.pos(1);
+	end.y = 0;
+	glm::vec3 segmentVec = end - start;
+	glm::vec3 startToPointVec = point - start;
+	glm::vec3 endToPointVec = point - end;
+
+	if (glm::dot(startToPointVec, segmentVec) < 0)
+	{
+		return glm::dot(startToPointVec, startToPointVec) <
+			std::pow(cutter.getDiameter() / 2.0f, 2.0f);
+	}
+	else if (glm::dot(endToPointVec, segmentVec) > 0)
+	{
+		return glm::dot(endToPointVec, endToPointVec) <
+			std::pow(cutter.getDiameter() / 2.0f, 2.0f);
+	}
 	return true;
 }
 

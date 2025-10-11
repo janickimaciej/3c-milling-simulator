@@ -15,7 +15,7 @@ Texture::Texture(const glm::ivec2& size, const float* data) :
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	resize(size, data);
+	reset(size, data);
 }
 
 Texture::Texture(Texture&& texture) noexcept :
@@ -51,7 +51,7 @@ unsigned int Texture::getId() const
 	return m_id;
 }
 
-void Texture::resize(const glm::ivec2& size, const float* data)
+void Texture::reset(const glm::ivec2& size, const float* data)
 {
 	m_size = size;
 
