@@ -1,5 +1,7 @@
 #include "simulation.hpp"
 
+#include <limits>
+
 Simulation::Simulation(const Toolpath& toolpath) :
 	m_toolpath{toolpath}
 { }
@@ -118,7 +120,7 @@ void Simulation::millSegment(const glm::vec3& materialSize, const glm::ivec2& gr
 					continue;
 				}
 
-				if (millPoint(materialSize, gridSize, surface, cutter, {x, y}))
+				if (millPoint(materialSize, gridSize, surface, cutter, segment, {x, y}))
 				{
 					minMilledGrid.x = std::min(minMilledGrid.x, x);
 					maxMilledGrid.x = std::max(maxMilledGrid.x, x);
@@ -157,7 +159,7 @@ void Simulation::millSegment(const glm::vec3& materialSize, const glm::ivec2& gr
 					continue;
 				}
 
-				if (millPoint(materialSize, gridSize, surface, cutter, {x, y}))
+				if (millPoint(materialSize, gridSize, surface, cutter, segment, {x, y}))
 				{
 					minMilledGrid.x = std::min(minMilledGrid.x, x);
 					maxMilledGrid.x = std::max(maxMilledGrid.x, x);
@@ -176,9 +178,33 @@ void Simulation::millSegment(const glm::vec3& materialSize, const glm::ivec2& gr
 }
 
 bool Simulation::millPoint(const glm::vec3& materialSize, const glm::ivec2& gridSize,
-	Surface& surface, const Cutter& cutter, const glm::ivec2& gridPoint)
+	Surface& surface, const Cutter& cutter, const Toolpath::Segment& segment,
+	const glm::ivec2& gridPos)
 {
-	surface[gridPoint.x][gridPoint.y] = 0;
+	if (cutter.type() == CutterType::flat)
+	{
+		if (cutter.getPos().y >= surface[gridPos.x][gridPos.y])
+		{
+			return false;
+		}
+		surface[gridPos.x][gridPos.y] = cutter.getPos().y;
+		return true;
+	}
+
+	glm::vec3 pos = gridPosToPos(materialSize, gridSize, gridPos);
+	glm::vec3 start = segment.pos(0);
+	glm::vec3 end = segment.pos(1);
+	pos.y = surface[gridPos.x][gridPos.y];
+
+	float cutterHeight = getMillSphereHeight(cutter, start, pos);
+	cutterHeight = std::min(cutterHeight, getMillCylinderHeight(cutter, start, end, pos));
+	cutterHeight = std::min(cutterHeight, getMillSphereHeight(cutter, end, pos));
+
+	if (cutterHeight >= surface[gridPos.x][gridPos.y])
+	{
+		return false;
+	}
+	surface[gridPos.x][gridPos.y] = cutterHeight;
 	return true;
 }
 
@@ -205,6 +231,61 @@ bool Simulation::isPointInsideMillProjection(glm::vec3 point, const Cutter& cutt
 			std::pow(cutter.getDiameter() / 2.0f, 2.0f);
 	}
 	return true;
+}
+
+float Simulation::getMillSphereHeight(const Cutter& cutter, const glm::vec3& center,
+	const glm::vec3& pos)
+{
+	float sqrtArg = std::pow(cutter.getDiameter() / 2.0f, 2.0f) -
+		std::pow(pos.x - center.x, 2.0f) - std::pow(pos.z - center.z, 2.0f);
+
+	if (sqrtArg < 0)
+	{
+		return std::numeric_limits<float>::max();
+	}
+	return center.y - std::sqrt(sqrtArg);
+}
+
+float Simulation::getMillCylinderHeight(const Cutter& cutter, const glm::vec3& start,
+	const glm::vec3& end, const glm::vec3& pos)
+{
+	glm::vec3 v = end - start;
+	v = glm::normalize(v);
+	float dx = pos.x - start.x;
+	float dz = pos.z - start.z;
+	float dx2 = std::pow(dx, 2.0f);
+	float dz2 = std::pow(dz, 2.0f);
+
+	float a = 1 - std::pow(v.y, 2.0f);
+	static constexpr float eps = 1e-6f;
+	if (a < eps)
+	{
+		return std::numeric_limits<float>::max();
+	}
+	float b = -2 * (dx * v.x * v.y + v.y * dz * v.z);
+	float c = dx2 + dz2 - dx2 * std::pow(v.x, 2.0f) - dz2 * std::pow(v.z, 2.0f) -
+		2 * dz * v.z * dx * v.x - std::pow(cutter.getDiameter() / 2.0f, 2.0f);
+	float sqrtArg = std::pow(b, 2.0f) - 4 * a * c;
+
+	if (sqrtArg < 0)
+	{
+		return std::numeric_limits<float>::max();
+	}
+
+	glm::vec3 millSurfacePos = pos;
+	millSurfacePos.y = start.y + (-b - std::sqrt(sqrtArg)) / (2 * a);
+	if (glm::dot(millSurfacePos - start, v) > 0 && glm::dot(millSurfacePos - end, v) < 0)
+	{
+		return millSurfacePos.y;
+	}
+
+	millSurfacePos.y = start.y + (-b + std::sqrt(sqrtArg)) / (2 * a);
+	if (glm::dot(millSurfacePos - start, v) > 0 && glm::dot(millSurfacePos - end, v) < 0)
+	{
+		return millSurfacePos.y;
+	}
+
+	return std::numeric_limits<float>::max();
 }
 
 glm::vec3 Simulation::gridPosToPos(const glm::vec3& materialSize, const glm::ivec2& gridSize,

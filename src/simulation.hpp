@@ -29,9 +29,14 @@ private:
 		Surface& surface, const Cutter& cutter, Texture& heightMap,
 		const Toolpath::Segment& segment);
 	static bool millPoint(const glm::vec3& materialSize, const glm::ivec2& gridSize,
-		Surface& surface, const Cutter& cutter, const glm::ivec2& gridPoint);
+		Surface& surface, const Cutter& cutter, const Toolpath::Segment& segment,
+		const glm::ivec2& gridPos);
 	static bool isPointInsideMillProjection(glm::vec3 point, const Cutter& cutter,
 		const Toolpath::Segment& segment);
+	static float getMillSphereHeight(const Cutter& cutter, const glm::vec3& center,
+		const glm::vec3& pos);
+	static float getMillCylinderHeight(const Cutter& cutter, const glm::vec3& start,
+		const glm::vec3& end, const glm::vec3& pos);
 	static glm::vec3 gridPosToPos(const glm::vec3& materialSize, const glm::ivec2& gridSize,
 		const glm::vec2& gridPos);
 	static glm::vec2 posToGridPos(const glm::vec3& materialSize, const glm::ivec2& gridSize,

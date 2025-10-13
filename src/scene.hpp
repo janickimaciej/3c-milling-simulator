@@ -58,8 +58,8 @@ private:
 	Camera m_camera;
 
 	float m_simulationSpeed = 1;
-	glm::vec3 m_materialSize{200, 50, 400};
-	glm::ivec2 m_gridSize{200, 400};
+	glm::vec3 m_materialSize{150, 40, 180};
+	glm::ivec2 m_gridSize{150, 180};
 
 	Surface m_surface;
 	Texture m_heightMap;
