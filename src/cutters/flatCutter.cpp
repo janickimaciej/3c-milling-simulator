@@ -4,7 +4,7 @@ FlatCutter::FlatCutter() :
 	Cutter{CutterType::flat}
 {
 	updateElementsScale();
-	updateElementsPos();
+	resetPos();
 }
 
 void FlatCutter::renderElements() const

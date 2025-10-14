@@ -72,3 +72,8 @@ void Cutter::setPos(const glm::vec3& pos)
 	m_pos = pos;
 	updateElementsPos();
 }
+
+void Cutter::resetPos()
+{
+	setPos({0, 66, 0});
+}

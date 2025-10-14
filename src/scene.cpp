@@ -21,12 +21,14 @@ Scene::Scene(const glm::ivec2& windowSize) :
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
-	setCutterType(CutterType::flat);
+	setCutterType(CutterType::round);
+	m_camera.addPitch(glm::radians(-60.0f));
+	m_camera.zoom(2.0f);
 }
 
 void Scene::update()
 {
-	if (m_simulation)
+	if (m_simulation != nullptr)
 	{
 		m_simulation->step(m_simulationSpeed, m_materialSize, m_gridSize, m_surface,
 			*m_activeCutter, m_heightMap);
@@ -80,7 +82,7 @@ void Scene::loadToolpathsFile(const std::string& path)
 
 void Scene::mill()
 {
-	if (m_simulation)
+	if (m_simulation != nullptr)
 	{
 		m_simulation->start();
 	}
@@ -88,7 +90,7 @@ void Scene::mill()
 
 void Scene::stop()
 {
-	if (m_simulation)
+	if (m_simulation != nullptr)
 	{
 		m_simulation->stop();
 	}
@@ -96,7 +98,7 @@ void Scene::stop()
 
 void Scene::millInstantly()
 {
-	if (m_simulation)
+	if (m_simulation != nullptr)
 	{
 		m_simulation->millInstantly(m_materialSize, m_gridSize, m_surface, *m_activeCutter,
 			m_heightMap);
@@ -107,6 +109,12 @@ void Scene::reset()
 {
 	m_surface.reset(m_gridSize, m_materialSize.y);
 	m_heightMap.reset({m_gridSize.x + 1, m_gridSize.y + 1}, m_surface.surface().data());
+	m_flatCutter.resetPos();
+	m_roundCutter.resetPos();
+	if (m_simulation != nullptr)
+	{
+		m_simulation->reset();
+	}
 }
 
 void Scene::moveXCamera(float x)
@@ -152,6 +160,7 @@ glm::vec3 Scene::getMaterialSize() const
 void Scene::setMaterialSize(const glm::vec3& materialSize)
 {
 	m_materialSize = materialSize;
+	reset();
 }
 
 glm::ivec2 Scene::getGridSize() const

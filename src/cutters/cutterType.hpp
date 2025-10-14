@@ -7,12 +7,12 @@ inline constexpr int cutterTypeCount = 2;
 
 enum class CutterType
 {
-	flat,
-	round
+	round,
+	flat
 };
 
 inline const std::array<const std::string, cutterTypeCount> cutterTypeLabels
 {
-	"Flat",
-	"Round"
+	"Round",
+	"Flat"
 };

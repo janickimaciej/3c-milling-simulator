@@ -4,7 +4,9 @@
 
 Simulation::Simulation(const Toolpath& toolpath) :
 	m_toolpath{toolpath}
-{ }
+{
+	reset();
+}
 
 void Simulation::start()
 {
@@ -30,8 +32,7 @@ void Simulation::step(float simulationSpeed, const glm::vec3& materialSize,
 	{
 		if (m_segmentIndex == m_toolpath.segmentCount())
 		{
-			m_running = false;
-			m_segmentIndex = 0;
+			reset();
 			return;
 		}
 
@@ -73,6 +74,13 @@ void Simulation::millInstantly(const glm::vec3& materialSize, const glm::ivec2& 
 		millSegment(materialSize, gridSize, surface, cutter, heightMap,
 			m_toolpath.getSegment(segment));
 	}
+}
+
+void Simulation::reset()
+{
+	m_running = false;
+	m_segmentIndex = 0;
+	m_segmentPosRelative = 0;
 }
 
 void Simulation::millSegment(const glm::vec3& materialSize, const glm::ivec2& gridSize,
@@ -183,22 +191,24 @@ bool Simulation::millPoint(const glm::vec3& materialSize, const glm::ivec2& grid
 {
 	if (cutter.type() == CutterType::flat)
 	{
-		if (cutter.getPos().y >= surface[gridPos.x][gridPos.y])
+		if (segment.pos(0.5f).y >= surface[gridPos.x][gridPos.y])
 		{
 			return false;
 		}
-		surface[gridPos.x][gridPos.y] = cutter.getPos().y;
+		surface[gridPos.x][gridPos.y] = segment.pos(0.5f).y;
 		return true;
 	}
 
 	glm::vec3 pos = gridPosToPos(materialSize, gridSize, gridPos);
 	glm::vec3 start = segment.pos(0);
 	glm::vec3 end = segment.pos(1);
+	glm::vec3 offset{0, cutter.getDiameter() / 2.0f, 0};
 	pos.y = surface[gridPos.x][gridPos.y];
 
-	float cutterHeight = getMillSphereHeight(cutter, start, pos);
-	cutterHeight = std::min(cutterHeight, getMillCylinderHeight(cutter, start, end, pos));
-	cutterHeight = std::min(cutterHeight, getMillSphereHeight(cutter, end, pos));
+	float cutterHeight = getMillSphereHeight(cutter, start + offset, pos);
+	cutterHeight = std::min(cutterHeight, getMillCylinderHeight(cutter, start + offset,
+		end + offset, pos));
+	cutterHeight = std::min(cutterHeight, getMillSphereHeight(cutter, end + offset, pos));
 
 	if (cutterHeight >= surface[gridPos.x][gridPos.y])
 	{

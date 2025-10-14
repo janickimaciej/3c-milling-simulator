@@ -58,15 +58,15 @@ private:
 	Camera m_camera;
 
 	float m_simulationSpeed = 1;
-	glm::vec3 m_materialSize{150, 40, 180};
+	glm::vec3 m_materialSize{150, 50, 180};
 	glm::ivec2 m_gridSize{150, 180};
 
 	Surface m_surface;
 	Texture m_heightMap;
 	FaceMesh m_faceMesh{};
 
-	FlatCutter m_flatCutter{};
 	RoundCutter m_roundCutter{};
+	FlatCutter m_flatCutter{};
 
 	Cutter* m_activeCutter{};
 

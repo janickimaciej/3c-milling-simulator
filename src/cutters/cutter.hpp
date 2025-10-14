@@ -22,6 +22,7 @@ public:
 	void setSpeed(float speed);
 	glm::vec3 getPos() const;
 	void setPos(const glm::vec3& pos);
+	void resetPos();
 
 	virtual void renderElements() const = 0;
 	virtual void updateElementsScale() = 0;
@@ -29,9 +30,9 @@ public:
 
 private:
 	CutterType m_type{};
-	float m_diameter = 10;
-	float m_millingHeight = 20;
-	float m_maxMillingDepth = 30;
+	float m_diameter = 16;
+	float m_millingHeight = 30;
+	float m_maxMillingDepth = 40;
 	float m_speed = 250;
-	glm::vec3 m_pos{0, 100, 0};
+	glm::vec3 m_pos{};
 };

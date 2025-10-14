@@ -17,13 +17,14 @@ public:
 	void stop();
 	void millInstantly(const glm::vec3& materialSize,
 		const glm::ivec2& gridSize, Surface& surface, const Cutter& cutter, Texture& heightMap);
+	void reset();
 
 private:
 	const Toolpath& m_toolpath;
-	bool m_running = false;
+	bool m_running{};
 	std::chrono::time_point<std::chrono::system_clock> m_t{};
-	int m_segmentIndex = 0;
-	float m_segmentPosRelative = 0;
+	int m_segmentIndex{};
+	float m_segmentPosRelative{};
 
 	static void millSegment(const glm::vec3& materialSize, const glm::ivec2& gridSize,
 		Surface& surface, const Cutter& cutter, Texture& heightMap,
