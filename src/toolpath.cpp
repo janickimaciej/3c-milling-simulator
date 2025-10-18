@@ -28,3 +28,8 @@ Toolpath::Segment Toolpath::getSegment(int index) const
 {
 	return {m_poss[index], m_poss[index + 1]};
 }
+
+std::vector<glm::vec3> Toolpath::getPoss() const
+{
+	return m_poss;
+}

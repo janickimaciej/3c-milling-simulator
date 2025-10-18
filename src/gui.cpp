@@ -7,6 +7,7 @@
 #include <imgui/backends/imgui_impl_opengl3.h>
 
 #include <algorithm>
+#include <string>
 
 GUI::GUI(GLFWwindow* window, Scene& scene, const glm::ivec2& windowSize) :
 	m_scene{scene},
@@ -16,7 +17,6 @@ GUI::GUI(GLFWwindow* window, Scene& scene, const glm::ivec2& windowSize) :
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init();
 }
@@ -43,6 +43,7 @@ void GUI::update()
 
 	separator();
 
+	updateBaseY();
 	updateMaterialSize();
 	updateGridSize();
 
@@ -58,7 +59,15 @@ void GUI::update()
 	separator();
 
 	updateToolpathsFilePath();
+	updateRenderToolpath();
+
+	separator();
+
 	updateButtons();
+
+	separator();
+
+	updateWarnings();
 
 	ImGui::PopItemWidth();
 	ImGui::End();
@@ -86,6 +95,22 @@ void GUI::updateSimulationSpeed()
 	if (simulationSpeed != prevSimulationSpeed)
 	{
 		m_scene.setSimulationSpeed(simulationSpeed);
+	}
+}
+
+void GUI::updateBaseY()
+{
+	static constexpr float stepPrecision = 0.1f;
+	static const std::string format = "%.2f";
+
+	float baseY = m_scene.getBaseY();
+	float prevBaseY = baseY;
+
+	ImGui::InputFloat("base y", &baseY, stepPrecision, stepPrecision, format.c_str());
+
+	if (baseY != prevBaseY)
+	{
+		m_scene.setBaseY(baseY);
 	}
 }
 
@@ -239,10 +264,21 @@ void GUI::updateToolpathsFilePath()
 {
 	ImGui::InputText("##toolpathsFilePath", m_toolpathsFilePath.data(), m_toolpathsFilePath.size());
 	ImGui::SameLine();
-	if (ImGui::Button("Load paths"))
+	if (ImGui::Button("Load toolpath"))
 	{
 		m_scene.loadToolpathsFile({m_toolpathsFilePath.data()});
 		m_toolpathsFilePath[0] = '\0';
+	}
+}
+
+void GUI::updateRenderToolpath()
+{
+	bool renderToolpath = m_scene.getRenderToolpath();
+	bool prevRenderToolpath = renderToolpath;
+	ImGui::Checkbox("render toolpath", &renderToolpath);
+	if (renderToolpath != prevRenderToolpath)
+	{
+		m_scene.setRenderToolpath(renderToolpath);
 	}
 }
 
@@ -264,6 +300,14 @@ void GUI::updateButtons()
 	{
 		m_scene.reset();
 	}
+}
+
+void GUI::updateWarnings()
+{
+	std::string& warnings = m_scene.getWarnings();
+	ImGui::InputTextMultiline("##warnings", warnings.data(), warnings.size(),
+		{static_cast<float>(width - 16), static_cast<float>(m_windowSize.y - 541)},
+		ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_WordWrap);
 }
 
 void GUI::separator()

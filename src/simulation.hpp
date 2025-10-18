@@ -6,6 +6,7 @@
 #include "toolpath.hpp"
 
 #include <chrono>
+#include <string>
 
 class Simulation
 {
@@ -13,10 +14,11 @@ public:
 	Simulation(const Toolpath& toolpath);
 	void start();
 	void step(float simulationSpeed, const glm::vec3& materialSize, const glm::ivec2& gridSize,
-		Surface& surface, Cutter& cutter, Texture& heightMap);
+		Surface& surface, Cutter& cutter, Texture& heightMap, float maxMillingDepthY,
+		std::string& warnings);
 	void stop();
-	void millInstantly(const glm::vec3& materialSize,
-		const glm::ivec2& gridSize, Surface& surface, const Cutter& cutter, Texture& heightMap);
+	void millInstantly(const glm::vec3& materialSize, const glm::ivec2& gridSize, Surface& surface,
+		const Cutter& cutter, Texture& heightMap, float maxMillingDepthY, std::string& warnings);
 	void reset();
 
 private:
@@ -26,12 +28,16 @@ private:
 	int m_segmentIndex{};
 	float m_segmentPosRelative{};
 
-	static void millSegment(const glm::vec3& materialSize, const glm::ivec2& gridSize,
-		Surface& surface, const Cutter& cutter, Texture& heightMap,
-		const Toolpath::Segment& segment);
-	static bool millPoint(const glm::vec3& materialSize, const glm::ivec2& gridSize,
-		Surface& surface, const Cutter& cutter, const Toolpath::Segment& segment,
-		const glm::ivec2& gridPos);
+	bool m_millingDownWarningFlag{};
+	bool m_millingTooDeepWarningFlag{};
+	bool m_millingWithNonMillingPartWarningFlag{};
+
+	void millSegment(const glm::vec3& materialSize, const glm::ivec2& gridSize,
+		Surface& surface, const Cutter& cutter, Texture& heightMap, float maxMillingDepthY,
+		std::string& warnings, const Toolpath::Segment& segment, bool updateHeightMap);
+	bool millPoint(const glm::vec3& materialSize, const glm::ivec2& gridSize,
+		Surface& surface, const Cutter& cutter, std::string& warnings,
+		const Toolpath::Segment& segment, const glm::ivec2& gridPos);
 	static bool isPointInsideMillProjection(glm::vec3 point, const Cutter& cutter,
 		const Toolpath::Segment& segment);
 	static float getMillSphereHeight(const Cutter& cutter, const glm::vec3& center,
@@ -42,4 +48,11 @@ private:
 		const glm::vec2& gridPos);
 	static glm::vec2 posToGridPos(const glm::vec3& materialSize, const glm::ivec2& gridSize,
 		const glm::vec3& pos);
+
+	void checkForMillingDownWarning(const Toolpath::Segment& segment, std::string& warnings);
+	void checkForMillingTooDeep(float maxMillingDepthY, const Toolpath::Segment& segment,
+		std::string& warnings);
+	void checkForMillingWithNonMillingPartWarningFlag(const Cutter& cutter, float millingDepth,
+		std::string& warnings);
+	void clearWarningFlags();
 };

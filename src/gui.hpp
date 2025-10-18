@@ -25,6 +25,7 @@ private:
 	std::array<char, maxFileNameLength> m_toolpathsFilePath{};
 
 	void updateSimulationSpeed();
+	void updateBaseY();
 	void updateMaterialSize();
 	void updateGridSize();
 	void updateCutterType();
@@ -33,7 +34,9 @@ private:
 	void updateMaxMillingDepth();
 	void updateCutterSpeed();
 	void updateToolpathsFilePath();
+	void updateRenderToolpath();
 	void updateButtons();
+	void updateWarnings();
 
 	void separator();
 };

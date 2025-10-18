@@ -15,7 +15,7 @@ CutterType Cutter::type() const
 void Cutter::render() const
 {
 	ShaderPrograms::cutter->use();
-	ShaderPrograms::cutter->setUniform("millingHeight", m_pos.y + m_millingHeight);
+	ShaderPrograms::cutter->setUniform("millingHeight", getPos().y + getMillingHeight());
 
 	renderElements();
 }
@@ -28,28 +28,17 @@ float Cutter::getDiameter() const
 void Cutter::setDiameter(float diameter)
 {
 	m_diameter = diameter;
-	updateElementsScale();
+	updateElements();
 }
 
 float Cutter::getMillingHeight() const
 {
-	return m_millingHeight;
+	return m_millingHeightToDiameterRatio * getDiameter();
 }
 
 void Cutter::setMillingHeight(float millingHeight)
 {
-	m_millingHeight = millingHeight;
-}
-
-float Cutter::getMaxMillingDepth() const
-{
-	return m_maxMillingDepth;
-}
-
-void Cutter::setMaxMillingDepth(float maxMillingDepth)
-{
-	m_maxMillingDepth = maxMillingDepth;
-	updateElementsScale();
+	m_millingHeightToDiameterRatio = millingHeight / getDiameter();
 }
 
 float Cutter::getSpeed() const
@@ -70,7 +59,7 @@ glm::vec3 Cutter::getPos() const
 void Cutter::setPos(const glm::vec3& pos)
 {
 	m_pos = pos;
-	updateElementsPos();
+	updateElements();
 }
 
 void Cutter::resetPos()

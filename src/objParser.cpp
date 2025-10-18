@@ -6,7 +6,7 @@
 #include <fstream>
 #include <iostream>
 
-std::vector<Vertex> ObjParser::parse(const std::string& path)
+std::vector<Mesh::Vertex> ObjParser::parse(const std::string& path)
 {
 	std::ifstream file{path};
 	if (!file)
@@ -15,7 +15,7 @@ std::vector<Vertex> ObjParser::parse(const std::string& path)
 		return {};
 	}
 
-	std::vector<Vertex> vertices{};
+	std::vector<Mesh::Vertex> vertices{};
 
 	std::vector<glm::vec3> poss{};
 	std::vector<glm::vec3> normalVectors{};
@@ -33,7 +33,7 @@ std::vector<Vertex> ObjParser::parse(const std::string& path)
 		}
 		else if (line[0] == 'f' && line[1] == ' ')
 		{
-			std::array<Vertex, 3> triangle = parseTriangle(line, poss, normalVectors);
+			std::array<Mesh::Vertex, 3> triangle = parseTriangle(line, poss, normalVectors);
 			vertices.push_back(triangle[0]);
 			vertices.push_back(triangle[1]);
 			vertices.push_back(triangle[2]);
@@ -91,10 +91,10 @@ glm::vec3 ObjParser::parseNormalVec(const std::string_view line)
 	return normalVector;
 }
 
-std::array<Vertex, 3> ObjParser::parseTriangle(const std::string_view line,
+std::array<Mesh::Vertex, 3> ObjParser::parseTriangle(const std::string_view line,
 	const std::vector<glm::vec3>& poss, const std::vector<glm::vec3>& normalVectors)
 {
-	std::array<Vertex, 3> triangle;
+	std::array<Mesh::Vertex, 3> triangle;
 
 	std::size_t vertexIndex = 0;
 	std::string number = "";

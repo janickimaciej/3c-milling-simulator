@@ -23,6 +23,7 @@ public:
 	Toolpath(const std::vector<glm::vec3>& poss);
 	int segmentCount() const;
 	Segment getSegment(int index) const;
+	std::vector<glm::vec3> getPoss() const;
 
 private:
 	std::vector<glm::vec3> m_poss{};

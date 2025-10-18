@@ -1,5 +1,6 @@
 #include "simulation.hpp"
 
+#include <cmath>
 #include <limits>
 
 Simulation::Simulation(const Toolpath& toolpath) :
@@ -15,7 +16,8 @@ void Simulation::start()
 }
 
 void Simulation::step(float simulationSpeed, const glm::vec3& materialSize,
-	const glm::ivec2& gridSize, Surface& surface, Cutter& cutter, Texture& heightMap)
+	const glm::ivec2& gridSize, Surface& surface, Cutter& cutter, Texture& heightMap,
+	float maxMillingDepthY, std::string& warnings)
 {
 	if (!m_running)
 	{
@@ -46,6 +48,7 @@ void Simulation::step(float simulationSpeed, const glm::vec3& materialSize,
 			dist -= remainingSegmentLength;
 			++m_segmentIndex;
 			m_segmentPosRelative = 0;
+			clearWarningFlags();
 		}
 		else
 		{
@@ -56,8 +59,8 @@ void Simulation::step(float simulationSpeed, const glm::vec3& materialSize,
 		}
 		cutter.setPos(end);
 
-		millSegment(materialSize, gridSize, surface, cutter, heightMap,
-			Toolpath::Segment{start, end});
+		millSegment(materialSize, gridSize, surface, cutter, heightMap, maxMillingDepthY, warnings,
+			Toolpath::Segment{start, end}, true);
 	}
 }
 
@@ -67,13 +70,16 @@ void Simulation::stop()
 }
 
 void Simulation::millInstantly(const glm::vec3& materialSize, const glm::ivec2& gridSize,
-	Surface& surface, const Cutter& cutter, Texture& heightMap)
+	Surface& surface, const Cutter& cutter, Texture& heightMap, float maxMillingDepthY,
+	std::string& warnings)
 {
-	for (int segment = 0; segment < m_toolpath.segmentCount(); ++segment)
+	for (; m_segmentIndex < m_toolpath.segmentCount(); ++m_segmentIndex)
 	{
-		millSegment(materialSize, gridSize, surface, cutter, heightMap,
-			m_toolpath.getSegment(segment));
+		millSegment(materialSize, gridSize, surface, cutter, heightMap, maxMillingDepthY, warnings,
+			m_toolpath.getSegment(m_segmentIndex), false);
+		clearWarningFlags();
 	}
+	heightMap.update(0, 0, gridSize.x + 1, gridSize.y + 1, surface);
 }
 
 void Simulation::reset()
@@ -81,10 +87,12 @@ void Simulation::reset()
 	m_running = false;
 	m_segmentIndex = 0;
 	m_segmentPosRelative = 0;
+	clearWarningFlags();
 }
 
 void Simulation::millSegment(const glm::vec3& materialSize, const glm::ivec2& gridSize,
-	Surface& surface, const Cutter& cutter, Texture& heightMap, const Toolpath::Segment& segment)
+	Surface& surface, const Cutter& cutter, Texture& heightMap, float maxMillingDepthY,
+	std::string& warnings, const Toolpath::Segment& segment, bool updateHeightMap)
 {
 	glm::ivec2 minMilledGrid = gridSize;
 	glm::ivec2 maxMilledGrid{0, 0};
@@ -128,7 +136,7 @@ void Simulation::millSegment(const glm::vec3& materialSize, const glm::ivec2& gr
 					continue;
 				}
 
-				if (millPoint(materialSize, gridSize, surface, cutter, segment, {x, y}))
+				if (millPoint(materialSize, gridSize, surface, cutter, warnings, segment, {x, y}))
 				{
 					minMilledGrid.x = std::min(minMilledGrid.x, x);
 					maxMilledGrid.x = std::max(maxMilledGrid.x, x);
@@ -167,7 +175,7 @@ void Simulation::millSegment(const glm::vec3& materialSize, const glm::ivec2& gr
 					continue;
 				}
 
-				if (millPoint(materialSize, gridSize, surface, cutter, segment, {x, y}))
+				if (millPoint(materialSize, gridSize, surface, cutter, warnings, segment, {x, y}))
 				{
 					minMilledGrid.x = std::min(minMilledGrid.x, x);
 					maxMilledGrid.x = std::max(maxMilledGrid.x, x);
@@ -178,24 +186,29 @@ void Simulation::millSegment(const glm::vec3& materialSize, const glm::ivec2& gr
 		}
 	}
 
-	if (minMilledGrid.x <= maxMilledGrid.x && minMilledGrid.y <= maxMilledGrid.y)
+	if (updateHeightMap && minMilledGrid.x <= maxMilledGrid.x && minMilledGrid.y <= maxMilledGrid.y)
 	{
 		heightMap.update(minMilledGrid.x, minMilledGrid.y, maxMilledGrid.x - minMilledGrid.x + 1,
 			maxMilledGrid.y - minMilledGrid.y + 1, surface);
+		checkForMillingDownWarning(segment, warnings);
+		checkForMillingTooDeep(maxMillingDepthY, segment, warnings);
 	}
 }
 
 bool Simulation::millPoint(const glm::vec3& materialSize, const glm::ivec2& gridSize,
-	Surface& surface, const Cutter& cutter, const Toolpath::Segment& segment,
+	Surface& surface, const Cutter& cutter, std::string& warnings, const Toolpath::Segment& segment,
 	const glm::ivec2& gridPos)
 {
 	if (cutter.type() == CutterType::flat)
 	{
-		if (segment.pos(0.5f).y >= surface[gridPos.x][gridPos.y])
+		float cutterHeight = segment.pos(0.5f).y;
+		if (cutterHeight >= surface[gridPos.x][gridPos.y])
 		{
 			return false;
 		}
-		surface[gridPos.x][gridPos.y] = segment.pos(0.5f).y;
+		checkForMillingWithNonMillingPartWarningFlag(cutter,
+			surface[gridPos.x][gridPos.y] - cutterHeight, warnings);
+		surface[gridPos.x][gridPos.y] = cutterHeight;
 		return true;
 	}
 
@@ -214,6 +227,8 @@ bool Simulation::millPoint(const glm::vec3& materialSize, const glm::ivec2& grid
 	{
 		return false;
 	}
+	checkForMillingWithNonMillingPartWarningFlag(cutter,
+		surface[gridPos.x][gridPos.y] - cutterHeight, warnings);
 	surface[gridPos.x][gridPos.y] = cutterHeight;
 	return true;
 }
@@ -310,4 +325,54 @@ glm::vec2 Simulation::posToGridPos(const glm::vec3& materialSize, const glm::ive
 {
 	return {(pos.x / materialSize.x + 0.5f) * gridSize.x,
 		(-pos.z / materialSize.z + 0.5f) * gridSize.y};
+}
+
+void Simulation::checkForMillingDownWarning(const Toolpath::Segment& segment,
+	std::string& warnings)
+{
+	glm::vec3 segmentVec = segment.pos(1) - segment.pos(0);
+	if (segmentVec.y >= 0)
+	{
+		return;
+	}
+
+	float horizontalLength = std::sqrt(std::pow(segmentVec.x, 2.0f) + std::pow(segmentVec.z, 2.0f));
+	float millingAngleDeg = glm::degrees(std::atan(horizontalLength / -segmentVec.y));
+	if (!m_millingDownWarningFlag && millingAngleDeg < 5.0f)
+	{
+		warnings.append("Segment " + std::to_string(m_segmentIndex) + ": milling down\n");
+		m_millingDownWarningFlag = true;
+	}
+}
+
+void Simulation::checkForMillingTooDeep(float maxMillingDepthY, const Toolpath::Segment& segment,
+	std::string& warnings)
+{
+	glm::vec3 start = segment.pos(0);
+	glm::vec3 end = segment.pos(1);
+
+	if (!m_millingTooDeepWarningFlag && (start.y < maxMillingDepthY || end.y < maxMillingDepthY))
+	{
+		warnings.append("Segment " + std::to_string(m_segmentIndex) +
+			": milling too deep\n");
+		m_millingTooDeepWarningFlag = true;
+	}
+}
+
+void Simulation::checkForMillingWithNonMillingPartWarningFlag(const Cutter& cutter,
+	float millingDepth, std::string& warnings)
+{
+	if (!m_millingWithNonMillingPartWarningFlag && millingDepth > cutter.getMillingHeight())
+	{
+		warnings.append("Segment " + std::to_string(m_segmentIndex) +
+			": milling with non-milling part\n");
+		m_millingWithNonMillingPartWarningFlag = true;
+	}
+}
+
+void Simulation::clearWarningFlags()
+{
+	m_millingDownWarningFlag = false;
+	m_millingTooDeepWarningFlag = false;
+	m_millingWithNonMillingPartWarningFlag = false;
 }

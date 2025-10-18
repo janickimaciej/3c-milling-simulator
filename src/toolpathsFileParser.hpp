@@ -11,7 +11,7 @@ class ToolpathsFileParser
 {
 public:
 	ToolpathsFileParser() = delete;
-	static std::vector<glm::vec3> parse(const std::string& path);
+	static std::vector<glm::vec3> parse(const std::string& path, std::string& warnings);
 	~ToolpathsFileParser() = delete;
 
 private:

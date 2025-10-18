@@ -1,7 +1,5 @@
 #pragma once
 
-#include "vertex.hpp"
-
 #include <glm/glm.hpp>
 
 #include <vector>
@@ -9,6 +7,12 @@
 class Mesh
 {
 public:
+	struct Vertex
+	{
+		glm::vec3 pos{};
+		glm::vec3 normalVec{};
+	};
+
 	Mesh(const std::vector<Vertex>& vertices);
 	~Mesh();
 	void render() const;

@@ -4,12 +4,13 @@ in vec3 pos;
 in vec3 normalVec;
 
 uniform vec3 cameraPos;
+uniform float maxMillingDepthY;
 
 out vec4 outColor;
 
 void main()
 {
-	vec3 color = vec3(1, 1, 1);
+	vec3 color = pos.y >= maxMillingDepthY ? vec3(1, 1, 1) : vec3(0.8, 0.8, 0.8);
 	const float ambient = 0.2f;
 	const float diffuse = 0.4f;
 	const float specular = 0.4f;

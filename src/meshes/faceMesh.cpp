@@ -1,4 +1,4 @@
-#include "faceMesh.hpp"
+#include "meshes/faceMesh.hpp"
 
 #include <glad/glad.h>
 

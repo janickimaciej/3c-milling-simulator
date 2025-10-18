@@ -175,9 +175,10 @@
     <ClCompile Include="src\cutters\roundCutter.cpp" />
     <ClCompile Include="src\gui.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\faceMesh.cpp" />
-    <ClCompile Include="src\mesh.cpp" />
+    <ClCompile Include="src\meshes\faceMesh.cpp" />
+    <ClCompile Include="src\meshes\mesh.cpp" />
     <ClCompile Include="src\objParser.cpp" />
+    <ClCompile Include="src\meshes\polylineMesh.cpp" />
     <ClCompile Include="src\scene.cpp" />
     <ClCompile Include="src\shaderProgram.cpp" />
     <ClCompile Include="src\shaderPrograms.cpp" />
@@ -205,9 +206,10 @@
     <ClInclude Include="src\cutters\flatCutter.hpp" />
     <ClInclude Include="src\cutters\roundCutter.hpp" />
     <ClInclude Include="src\gui.hpp" />
-    <ClInclude Include="src\faceMesh.hpp" />
-    <ClInclude Include="src\mesh.hpp" />
+    <ClInclude Include="src\meshes\faceMesh.hpp" />
+    <ClInclude Include="src\meshes\mesh.hpp" />
     <ClInclude Include="src\objParser.hpp" />
+    <ClInclude Include="src\meshes\polylineMesh.hpp" />
     <ClInclude Include="src\simulation.hpp" />
     <ClInclude Include="src\toolpath.hpp" />
     <ClInclude Include="src\toolpathsFileParser.hpp" />
@@ -217,11 +219,12 @@
     <ClInclude Include="src\side.hpp" />
     <ClInclude Include="src\surface.hpp" />
     <ClInclude Include="src\texture.hpp" />
-    <ClInclude Include="src\vertex.hpp" />
     <ClInclude Include="src\window.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="dep\imgui\misc\debuggers\imgui.natstepfilter" />
+    <None Include="src\shaders\polylineFS.glsl" />
+    <None Include="src\shaders\polylineVS.glsl" />
     <None Include="src\shaders\cutterFS.glsl" />
     <None Include="src\shaders\cutterVS.glsl" />
     <None Include="src\shaders\faceFS.glsl" />

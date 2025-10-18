@@ -4,7 +4,6 @@
 #include "shaderPrograms.hpp"
 #include "side.hpp"
 #include "toolpathsFileParser.hpp"
-#include "vertex.hpp"
 
 #include <cstdlib>
 #include <iterator>
@@ -15,7 +14,7 @@ static constexpr float farPlane = 10000.0f;
 
 Scene::Scene(const glm::ivec2& windowSize) :
 	m_camera{windowSize, fovYDeg, nearPlane, farPlane},
-	m_surface{m_gridSize, m_materialSize.y},
+	m_surface{m_gridSize, m_baseY + m_materialSize.y},
 	m_heightMap{{m_gridSize.x + 1, m_gridSize.y + 1}, m_surface.surface().data()}
 {
 	glEnable(GL_DEPTH_TEST);
@@ -31,7 +30,7 @@ void Scene::update()
 	if (m_simulation != nullptr)
 	{
 		m_simulation->step(m_simulationSpeed, m_materialSize, m_gridSize, m_surface,
-			*m_activeCutter, m_heightMap);
+			*m_activeCutter, m_heightMap, maxMillingDepthY(), m_warnings);
 	}
 }
 
@@ -46,12 +45,15 @@ void Scene::render()
 	ShaderPrograms::topFace->use();
 	ShaderPrograms::topFace->setUniform("materialSize", m_materialSize);
 	ShaderPrograms::topFace->setUniform("gridSize", m_gridSize);
+	ShaderPrograms::topFace->setUniform("maxMillingDepthY", maxMillingDepthY());
 	m_heightMap.use();
 	m_faceMesh.render(6 * m_gridSize.x * m_gridSize.y);
 
 	ShaderPrograms::sideFace->use();
+	ShaderPrograms::sideFace->setUniform("baseY", m_baseY);
 	ShaderPrograms::sideFace->setUniform("materialSize", m_materialSize);
 	ShaderPrograms::sideFace->setUniform("gridSize", m_gridSize);
+	ShaderPrograms::sideFace->setUniform("maxMillingDepthY", maxMillingDepthY());
 	m_heightMap.use();
 	ShaderPrograms::sideFace->setUniform("side", static_cast<int>(Side::left));
 	m_faceMesh.render(6 * m_gridSize.y);
@@ -63,10 +65,18 @@ void Scene::render()
 	m_faceMesh.render(6 * m_gridSize.x);
 
 	ShaderPrograms::bottomFace->use();
+	ShaderPrograms::bottomFace->setUniform("baseY", m_baseY);
 	ShaderPrograms::bottomFace->setUniform("materialSize", m_materialSize);
+	ShaderPrograms::bottomFace->setUniform("maxMillingDepthY", maxMillingDepthY());
 	m_faceMesh.render(6);
 
 	m_activeCutter->render();
+
+	if (m_renderToolpath && m_toolpathMesh != nullptr)
+	{
+		ShaderPrograms::polyline->use();
+		m_toolpathMesh->render();
+	}
 }
 
 void Scene::updateWindowSize()
@@ -76,8 +86,14 @@ void Scene::updateWindowSize()
 
 void Scene::loadToolpathsFile(const std::string& path)
 {
-	m_toolpath = std::make_unique<Toolpath>(ToolpathsFileParser::parse("res/toolpaths/" + path));
-	m_simulation = std::make_unique<Simulation>(*m_toolpath);
+	std::vector<glm::vec3> toolpathPoss =
+		ToolpathsFileParser::parse("res/toolpaths/" + path, m_warnings);
+	if (toolpathPoss.size() > 0)
+	{
+		m_toolpath = std::make_unique<Toolpath>(toolpathPoss);
+		m_toolpathMesh = std::make_unique<PolylineMesh>(m_toolpath->getPoss());
+		m_simulation = std::make_unique<Simulation>(*m_toolpath);
+	}
 }
 
 void Scene::mill()
@@ -101,13 +117,13 @@ void Scene::millInstantly()
 	if (m_simulation != nullptr)
 	{
 		m_simulation->millInstantly(m_materialSize, m_gridSize, m_surface, *m_activeCutter,
-			m_heightMap);
+			m_heightMap, maxMillingDepthY(), m_warnings);
 	}
 }
 
 void Scene::reset()
 {
-	m_surface.reset(m_gridSize, m_materialSize.y);
+	m_surface.reset(m_gridSize, m_baseY + m_materialSize.y);
 	m_heightMap.reset({m_gridSize.x + 1, m_gridSize.y + 1}, m_surface.surface().data());
 	m_flatCutter.resetPos();
 	m_roundCutter.resetPos();
@@ -115,6 +131,7 @@ void Scene::reset()
 	{
 		m_simulation->reset();
 	}
+	m_warnings = "";
 }
 
 void Scene::moveXCamera(float x)
@@ -150,6 +167,17 @@ float Scene::getSimulationSpeed() const
 void Scene::setSimulationSpeed(float simulationSpeed)
 {
 	m_simulationSpeed = simulationSpeed;
+}
+
+float Scene::getBaseY() const
+{
+	return m_baseY;
+}
+
+void Scene::setBaseY(float baseY)
+{
+	m_baseY = baseY;
+	reset();
 }
 
 glm::vec3 Scene::getMaterialSize() const
@@ -213,12 +241,12 @@ void Scene::setCutterMillingHeight(float millingHeight)
 
 float Scene::getMaxMillingDepth() const
 {
-	return m_activeCutter->getMaxMillingDepth();
+	return m_maxMillingDepth;
 }
 
 void Scene::setMaxMillingDepth(float maxMillingDepth)
 {
-	m_activeCutter->setMaxMillingDepth(maxMillingDepth);
+	m_maxMillingDepth = maxMillingDepth;
 }
 
 float Scene::getCutterSpeed() const
@@ -229,4 +257,24 @@ float Scene::getCutterSpeed() const
 void Scene::setCutterSpeed(float speed)
 {
 	m_activeCutter->setSpeed(speed);
+}
+
+bool Scene::getRenderToolpath() const
+{
+	return m_renderToolpath;
+}
+
+void Scene::setRenderToolpath(bool renderToolpath)
+{
+	m_renderToolpath = renderToolpath;
+}
+
+std::string& Scene::getWarnings()
+{
+	return m_warnings;
+}
+
+float Scene::maxMillingDepthY() const
+{
+	return m_baseY + m_materialSize.y - m_maxMillingDepth;
 }

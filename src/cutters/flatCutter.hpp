@@ -11,8 +11,7 @@ public:
 	FlatCutter();
 
 	virtual void renderElements() const override;
-	virtual void updateElementsScale() override;
-	virtual void updateElementsPos() override;
+	virtual void updateElements() override;
 
 private:
 	CutterElement m_cyllinder{"res/meshes/flatCutterCyllinder.obj"};

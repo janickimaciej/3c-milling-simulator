@@ -6,6 +6,7 @@
 #define SIDE_FRONT 3
 
 uniform mat4 projectionViewMatrix;
+uniform float baseY;
 uniform vec3 materialSize;
 uniform ivec2 gridSize;
 uniform sampler2D heightMap;
@@ -92,7 +93,7 @@ void calcPos()
 	pos.xz = relativeToPos(relativePos);
 	if (vertexQuadIndex == 0 || vertexQuadIndex == 1 || vertexQuadIndex == 3)
 	{
-		pos.y = 0;
+		pos.y = baseY;
 	}
 	else
 	{

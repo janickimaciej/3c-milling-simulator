@@ -16,8 +16,6 @@ public:
 	void setDiameter(float diameter);
 	float getMillingHeight() const;
 	void setMillingHeight(float millingHeight);
-	float getMaxMillingDepth() const;
-	void setMaxMillingDepth(float maxMillingDepth);
 	float getSpeed() const;
 	void setSpeed(float speed);
 	glm::vec3 getPos() const;
@@ -25,14 +23,12 @@ public:
 	void resetPos();
 
 	virtual void renderElements() const = 0;
-	virtual void updateElementsScale() = 0;
-	virtual void updateElementsPos() = 0;
+	virtual void updateElements() = 0;
 
 private:
 	CutterType m_type{};
 	float m_diameter = 16;
-	float m_millingHeight = 30;
-	float m_maxMillingDepth = 40;
+	float m_millingHeightToDiameterRatio = 2;
 	float m_speed = 250;
 	glm::vec3 m_pos{};
 };

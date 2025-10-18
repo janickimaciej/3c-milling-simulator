@@ -1,6 +1,7 @@
 #version 420 core
 
 uniform mat4 projectionViewMatrix;
+uniform float baseY;
 uniform vec3 materialSize;
 
 out vec3 pos;
@@ -12,7 +13,7 @@ void main()
 {
 	vec2 relativePos[6] = {vec2(0, 0), vec2(1, 1), vec2(1, 0), vec2(0, 0), vec2(0, 1), vec2(1, 1)};
 	pos.xz = relativeToPos(relativePos[gl_VertexID]);
-	pos.y = 0;
+	pos.y = baseY;
 	normalVec = vec3(0, -1, 0);
 
 	gl_Position = projectionViewMatrix * vec4(pos, 1);

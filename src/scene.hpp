@@ -5,7 +5,8 @@
 #include "cutters/cutterType.hpp"
 #include "cutters/flatCutter.hpp"
 #include "cutters/roundCutter.hpp"
-#include "faceMesh.hpp"
+#include "meshes/faceMesh.hpp"
+#include "meshes/polylineMesh.hpp"
 #include "shaderProgram.hpp"
 #include "simulation.hpp"
 #include "surface.hpp"
@@ -39,6 +40,8 @@ public:
 
 	float getSimulationSpeed() const;
 	void setSimulationSpeed(float simulationSpeed);
+	float getBaseY() const;
+	void setBaseY(float baseY);
 	glm::vec3 getMaterialSize() const;
 	void setMaterialSize(const glm::vec3& materialSize);
 	glm::ivec2 getGridSize() const;
@@ -53,23 +56,33 @@ public:
 	void setMaxMillingDepth(float maxMillingDepth);
 	float getCutterSpeed() const;
 	void setCutterSpeed(float speed);
+	bool getRenderToolpath() const;
+	void setRenderToolpath(bool renderToolpath);
+	std::string& getWarnings();
 
 private:
 	Camera m_camera;
 
 	float m_simulationSpeed = 1;
+	float m_baseY = 0;
 	glm::vec3 m_materialSize{150, 50, 180};
-	glm::ivec2 m_gridSize{150, 180};
+	glm::ivec2 m_gridSize{300, 360};
 
 	Surface m_surface;
 	Texture m_heightMap;
 	FaceMesh m_faceMesh{};
+	float m_maxMillingDepth = 40;
 
 	RoundCutter m_roundCutter{};
 	FlatCutter m_flatCutter{};
-
 	Cutter* m_activeCutter{};
 
 	std::unique_ptr<Toolpath> m_toolpath = nullptr;
+	std::unique_ptr<PolylineMesh> m_toolpathMesh = nullptr;
+	bool m_renderToolpath = false;
 	std::unique_ptr<Simulation> m_simulation = nullptr;
+
+	std::string m_warnings = "";
+
+	float maxMillingDepthY() const;
 };

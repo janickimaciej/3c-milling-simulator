@@ -4,7 +4,7 @@ RoundCutter::RoundCutter() :
 	Cutter{CutterType::round}
 {
 	resetPos();
-	updateElementsScale();
+	updateElements();
 }
 
 void RoundCutter::renderElements() const
@@ -13,20 +13,14 @@ void RoundCutter::renderElements() const
 	m_dome.render();
 }
 
-void RoundCutter::updateElementsScale()
+void RoundCutter::updateElements()
 {
 	float radius = getDiameter() / 2.0f;
-	float maxMillingDepth = getMaxMillingDepth();
-
-	m_cyllinder.setScale({radius, maxMillingDepth - radius, radius});
-	m_dome.setScale({radius, radius, radius});
-}
-
-void RoundCutter::updateElementsPos()
-{
+	glm::vec3 offset{0, radius, 0};
 	glm::vec3 pos = getPos();
 
-	glm::vec3 offset{0, getDiameter() / 2.0f, 0};
+	m_cyllinder.setScale({radius, 7 * radius, radius});
 	m_cyllinder.setPos(pos + offset);
+	m_dome.setScale({radius, radius, radius});
 	m_dome.setPos(pos + offset);
 }

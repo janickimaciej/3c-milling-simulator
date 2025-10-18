@@ -2,14 +2,13 @@
 
 #include <cstddef>
 #include <fstream>
-#include <iostream>
 
-std::vector<glm::vec3> ToolpathsFileParser::parse(const std::string& path)
+std::vector<glm::vec3> ToolpathsFileParser::parse(const std::string& path, std::string& warnings)
 {
 	std::ifstream file{path};
 	if (!file)
 	{
-		std::cerr << "File does not exist:\n" << path << '\n';
+		warnings.append("File does not exist:\n" + path + '\n');
 		return {};
 	}
 
