@@ -43,9 +43,9 @@ void GUI::update()
 
 	separator();
 
-	updateBaseY();
 	updateMaterialSize();
 	updateGridSize();
+	updateBaseY();
 
 	separator();
 
@@ -53,7 +53,6 @@ void GUI::update()
 	updateCutterType();
 	updateCutterDiameter();
 	updateCutterMillingHeight();
-	updateMaxMillingDepth();
 	updateCutterSpeed();
 
 	separator();
@@ -95,22 +94,6 @@ void GUI::updateSimulationSpeed()
 	if (simulationSpeed != prevSimulationSpeed)
 	{
 		m_scene.setSimulationSpeed(simulationSpeed);
-	}
-}
-
-void GUI::updateBaseY()
-{
-	static constexpr float stepPrecision = 0.1f;
-	static const std::string format = "%.2f";
-
-	float baseY = m_scene.getBaseY();
-	float prevBaseY = baseY;
-
-	ImGui::InputFloat("base y", &baseY, stepPrecision, stepPrecision, format.c_str());
-
-	if (baseY != prevBaseY)
-	{
-		m_scene.setBaseY(baseY);
 	}
 }
 
@@ -159,6 +142,23 @@ void GUI::updateGridSize()
 	if (gridSize != prevGridSize)
 	{
 		m_scene.setGridSize(gridSize);
+	}
+}
+
+void GUI::updateBaseY()
+{
+	static constexpr float stepPrecision = 0.1f;
+	static const std::string format = "%.2f";
+
+	float baseY = m_scene.getBaseY();
+	float prevBaseY = baseY;
+
+	ImGui::Text("Base Y");
+	ImGui::InputFloat("##baseY", &baseY, stepPrecision, stepPrecision, format.c_str());
+
+	if (baseY != prevBaseY)
+	{
+		m_scene.setBaseY(baseY);
 	}
 }
 
@@ -220,25 +220,6 @@ void GUI::updateCutterMillingHeight()
 	if (millingHeight != prevMillingHeight)
 	{
 		m_scene.setCutterMillingHeight(millingHeight);
-	}
-}
-
-void GUI::updateMaxMillingDepth()
-{
-	static constexpr float stepPrecision = 0.1f;
-	static const std::string format = "%.1f";
-
-	float maxMillingDepth = m_scene.getMaxMillingDepth();
-	float prevMaxMillingDepth = maxMillingDepth;
-
-	ImGui::InputFloat("max milling depth##cutter", &maxMillingDepth, stepPrecision, stepPrecision,
-		format.c_str());
-
-	maxMillingDepth = std::max(maxMillingDepth, 0.1f);
-
-	if (maxMillingDepth != prevMaxMillingDepth)
-	{
-		m_scene.setMaxMillingDepth(maxMillingDepth);
 	}
 }
 
