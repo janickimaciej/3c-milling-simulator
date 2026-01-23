@@ -58,6 +58,7 @@ void GUI::update()
 	separator();
 
 	updateToolpathsFilePath();
+	updateRenderCutter();
 	updateRenderToolpath();
 
 	separator();
@@ -252,6 +253,17 @@ void GUI::updateToolpathsFilePath()
 	}
 }
 
+void GUI::updateRenderCutter()
+{
+	bool renderCutter = m_scene.getRenderCutter();
+	bool prevRenderCutter = renderCutter;
+	ImGui::Checkbox("render cutter", &renderCutter);
+	if (renderCutter != prevRenderCutter)
+	{
+		m_scene.setRenderCutter(renderCutter);
+	}
+}
+
 void GUI::updateRenderToolpath()
 {
 	bool renderToolpath = m_scene.getRenderToolpath();
@@ -287,7 +299,7 @@ void GUI::updateWarnings()
 {
 	std::string& warnings = m_scene.getWarnings();
 	ImGui::InputTextMultiline("##warnings", warnings.data(), warnings.size(),
-		{static_cast<float>(width - 16), static_cast<float>(m_windowSize.y - 541)},
+		{static_cast<float>(width - 16), static_cast<float>(m_windowSize.y - 558)},
 		ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_WordWrap);
 }
 

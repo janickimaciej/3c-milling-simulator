@@ -10,7 +10,8 @@ out vec4 outColor;
 
 void main()
 {
-	vec3 color = pos.y >= baseY ? vec3(1, 1, 1) : vec3(0.8, 0.8, 0.8);
+	const float eps = 1e-3;
+	vec3 color = pos.y >= baseY - eps ? vec3(1, 1, 1) : vec3(0.8, 0.8, 0.8);
 	const float ambient = 0.2f;
 	const float diffuse = 0.4f;
 	const float specular = 0.4f;

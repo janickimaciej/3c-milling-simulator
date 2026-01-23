@@ -17,6 +17,8 @@ PolylineMesh::~PolylineMesh()
 void PolylineMesh::render() const
 {
 	glBindVertexArray(m_VAO);
+	glPointSize(3);
+	glDrawArrays(GL_POINTS, 0, m_vertexCount);
 	glDrawArrays(GL_LINE_STRIP, 0, m_vertexCount);
 	glBindVertexArray(0);
 }

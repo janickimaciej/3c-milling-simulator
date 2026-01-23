@@ -10,8 +10,8 @@
 #include <iterator>
 
 static constexpr float fovYDeg = 60.0f;
-static constexpr float nearPlane = 10.0f;
-static constexpr float farPlane = 10000.0f;
+static constexpr float nearPlane = 1.0f;
+static constexpr float farPlane = 1000.0f;
 
 Scene::Scene(const glm::ivec2& windowSize) :
 	m_camera{windowSize, fovYDeg, nearPlane, farPlane},
@@ -69,7 +69,10 @@ void Scene::render()
 	ShaderPrograms::bottomFace->setUniform("baseY", m_baseY);
 	m_faceMesh.render(6);
 
-	m_activeCutter->render();
+	if (m_renderCutter)
+	{
+		m_activeCutter->render();
+	}
 
 	if (m_renderToolpath && m_toolpathMesh != nullptr)
 	{
@@ -260,6 +263,16 @@ float Scene::getCutterSpeed() const
 void Scene::setCutterSpeed(float speed)
 {
 	m_activeCutter->setSpeed(speed);
+}
+
+bool Scene::getRenderCutter() const
+{
+	return m_renderCutter;
+}
+
+void Scene::setRenderCutter(bool renderCutter)
+{
+	m_renderCutter = renderCutter;
 }
 
 bool Scene::getRenderToolpath() const

@@ -55,6 +55,8 @@ public:
 	void setCutterMillingHeight(float millingHeight);
 	float getCutterSpeed() const;
 	void setCutterSpeed(float speed);
+	bool getRenderCutter() const;
+	void setRenderCutter(bool renderCutter);
 	bool getRenderToolpath() const;
 	void setRenderToolpath(bool renderToolpath);
 	std::string& getWarnings();
@@ -63,9 +65,9 @@ private:
 	Camera m_camera;
 
 	float m_simulationSpeed = 1;
-	glm::vec3 m_materialSize{150, 50, 180};
-	glm::ivec2 m_gridSize{300, 360};
-	float m_baseY = 15;
+	glm::vec3 m_materialSize{150, 50, 150};
+	glm::ivec2 m_gridSize{1500, 1500};
+	float m_baseY = 25;
 
 	Surface m_surface;
 	Texture m_heightMap;
@@ -77,6 +79,7 @@ private:
 
 	std::unique_ptr<Toolpath> m_toolpath = nullptr;
 	std::unique_ptr<PolylineMesh> m_toolpathMesh = nullptr;
+	bool m_renderCutter = true;
 	bool m_renderToolpath = false;
 	std::unique_ptr<Simulation> m_simulation = nullptr;
 

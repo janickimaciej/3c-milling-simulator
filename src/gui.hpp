@@ -33,6 +33,7 @@ private:
 	void updateCutterMillingHeight();
 	void updateCutterSpeed();
 	void updateToolpathsFilePath();
+	void updateRenderCutter();
 	void updateRenderToolpath();
 	void updateButtons();
 	void updateWarnings();
