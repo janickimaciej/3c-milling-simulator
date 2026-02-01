@@ -2,27 +2,24 @@
 
 #include "scene.hpp"
 
-#include <glad/glad.h>
-#include <glfw/glfw3.h>
 #include <glm/glm.hpp>
 
-class GUI
+#include <string>
+
+class LeftPanel
 {
 public:
 	static constexpr int width = 272;
 
-	GUI(GLFWwindow* window, Scene& scene, const glm::ivec2& windowSize);
-	~GUI();
-
+	LeftPanel(Scene& scene, const glm::ivec2& viewportSize);
 	void update();
-	void render();
 
 private:
 	Scene& m_scene;
-	const glm::ivec2& m_windowSize;
+	const glm::ivec2& m_viewportSize;
 
-	static constexpr int maxFileNameLength = 32;
-	std::array<char, maxFileNameLength> m_toolpathsFilePath{};
+	static constexpr int m_maxFileNameLength = 64;
+	std::array<char, m_maxFileNameLength> m_toolpathsFilePath{};
 
 	void updateSimulationSpeed();
 	void updateMaterialSize();

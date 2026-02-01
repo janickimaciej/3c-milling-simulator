@@ -1,41 +1,18 @@
-#include "gui.hpp"
-
-#include "cutters/cutterType.hpp"
+#include "gui/leftPanel.hpp"
 
 #include <imgui/imgui.h>
-#include <imgui/backends/imgui_impl_glfw.h>
-#include <imgui/backends/imgui_impl_opengl3.h>
 
 #include <algorithm>
-#include <string>
 
-GUI::GUI(GLFWwindow* window, Scene& scene, const glm::ivec2& windowSize) :
+LeftPanel::LeftPanel(Scene& scene, const glm::ivec2& viewportSize) :
 	m_scene{scene},
-	m_windowSize{windowSize}
-{
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init();
-}
+	m_viewportSize{viewportSize}
+{ }
 
-GUI::~GUI()
+void LeftPanel::update()
 {
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-}
-
-void GUI::update()
-{
-	ImGui_ImplGlfw_NewFrame();
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui::NewFrame();
-
 	ImGui::SetNextWindowPos({0, 0}, ImGuiCond_Always);
-	ImGui::SetNextWindowSize({width, static_cast<float>(m_windowSize.y)}, ImGuiCond_Always);
+	ImGui::SetNextWindowSize({width, static_cast<float>(m_viewportSize.y)}, ImGuiCond_Always);
 	ImGui::Begin("leftPanel", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
 	ImGui::PushItemWidth(100);
 
@@ -73,13 +50,7 @@ void GUI::update()
 	ImGui::End();
 }
 
-void GUI::render()
-{
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-}
-
-void GUI::updateSimulationSpeed()
+void LeftPanel::updateSimulationSpeed()
 {
 	static constexpr float stepPrecision = 0.1f;
 	static const std::string format = "%.2f";
@@ -98,7 +69,7 @@ void GUI::updateSimulationSpeed()
 	}
 }
 
-void GUI::updateMaterialSize()
+void LeftPanel::updateMaterialSize()
 {
 	static constexpr float stepPrecision = 1.0f;
 	static const std::string format = "%.1f";
@@ -125,7 +96,7 @@ void GUI::updateMaterialSize()
 	}
 }
 
-void GUI::updateGridSize()
+void LeftPanel::updateGridSize()
 {
 	static constexpr int stepPrecision = 1;
 
@@ -146,7 +117,7 @@ void GUI::updateGridSize()
 	}
 }
 
-void GUI::updateBaseY()
+void LeftPanel::updateBaseY()
 {
 	static constexpr float stepPrecision = 0.1f;
 	static const std::string format = "%.2f";
@@ -163,7 +134,7 @@ void GUI::updateBaseY()
 	}
 }
 
-void GUI::updateCutterType()
+void LeftPanel::updateCutterType()
 {
 	CutterType cutterType = m_scene.getCutterType();
 	CutterType prevCutterType = cutterType;
@@ -186,7 +157,7 @@ void GUI::updateCutterType()
 	}
 }
 
-void GUI::updateCutterDiameter()
+void LeftPanel::updateCutterDiameter()
 {
 	static constexpr float stepPrecision = 0.1f;
 	static const std::string format = "%.1f";
@@ -205,7 +176,7 @@ void GUI::updateCutterDiameter()
 	}
 }
 
-void GUI::updateCutterMillingHeight()
+void LeftPanel::updateCutterMillingHeight()
 {
 	static constexpr float stepPrecision = 0.1f;
 	static const std::string format = "%.1f";
@@ -224,7 +195,7 @@ void GUI::updateCutterMillingHeight()
 	}
 }
 
-void GUI::updateCutterSpeed()
+void LeftPanel::updateCutterSpeed()
 {
 	static constexpr float stepPrecision = 0.1f;
 	static const std::string format = "%.1f";
@@ -242,7 +213,7 @@ void GUI::updateCutterSpeed()
 	}
 }
 
-void GUI::updateToolpathsFilePath()
+void LeftPanel::updateToolpathsFilePath()
 {
 	ImGui::InputText("##toolpathsFilePath", m_toolpathsFilePath.data(), m_toolpathsFilePath.size());
 	ImGui::SameLine();
@@ -253,7 +224,7 @@ void GUI::updateToolpathsFilePath()
 	}
 }
 
-void GUI::updateRenderCutter()
+void LeftPanel::updateRenderCutter()
 {
 	bool renderCutter = m_scene.getRenderCutter();
 	bool prevRenderCutter = renderCutter;
@@ -264,7 +235,7 @@ void GUI::updateRenderCutter()
 	}
 }
 
-void GUI::updateRenderToolpath()
+void LeftPanel::updateRenderToolpath()
 {
 	bool renderToolpath = m_scene.getRenderToolpath();
 	bool prevRenderToolpath = renderToolpath;
@@ -275,7 +246,7 @@ void GUI::updateRenderToolpath()
 	}
 }
 
-void GUI::updateButtons()
+void LeftPanel::updateButtons()
 {
 	if (ImGui::Button("Mill"))
 	{
@@ -295,15 +266,15 @@ void GUI::updateButtons()
 	}
 }
 
-void GUI::updateWarnings()
+void LeftPanel::updateWarnings()
 {
 	std::string& warnings = m_scene.getWarnings();
 	ImGui::InputTextMultiline("##warnings", warnings.data(), warnings.size(),
-		{static_cast<float>(width - 16), static_cast<float>(m_windowSize.y - 558)},
+		{static_cast<float>(width - 16), static_cast<float>(m_viewportSize.y - 558)},
 		ImGuiInputTextFlags_ReadOnly | ImGuiInputTextFlags_WordWrap);
 }
 
-void GUI::separator()
+void LeftPanel::separator()
 {
 	ImGui::Spacing();
 	ImGui::Separator();

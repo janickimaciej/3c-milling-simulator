@@ -21,11 +21,11 @@
 class Scene
 {
 public:
-	Scene(const glm::ivec2& windowSize);
+	Scene(const glm::ivec2& viewportSize);
 
 	void update();
 	void render();
-	void updateWindowSize();
+	void updateViewportSize();
 
 	void loadToolpathsFile(const std::string& path);
 	void mill();

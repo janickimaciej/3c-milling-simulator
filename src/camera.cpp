@@ -6,8 +6,8 @@
 
 #include <cmath>
 
-Camera::Camera(const glm::ivec2& windowSize, float fovYDeg, float nearPlane, float farPlane) :
-	m_windowSize{windowSize},
+Camera::Camera(const glm::ivec2& viewportSize, float fovYDeg, float nearPlane, float farPlane) :
+	m_viewportSize{viewportSize},
 	m_nearPlane{nearPlane},
 	m_farPlane{farPlane},
 	m_fovYDeg{fovYDeg}
@@ -26,7 +26,7 @@ glm::mat4 Camera::getMatrix() const
 	return m_projectionMatrix * glm::inverse(m_viewMatrixInverse);
 }
 
-void Camera::updateWindowSize()
+void Camera::updateViewportSize()
 {
 	updateProjectionMatrix();
 }
@@ -132,7 +132,7 @@ void Camera::updateViewMatrix()
 
 void Camera::updateProjectionMatrix()
 {
-	float aspectRatio = static_cast<float>(m_windowSize.x) / m_windowSize.y;
+	float aspectRatio = static_cast<float>(m_viewportSize.x) / m_viewportSize.y;
 	float fovYRad = glm::radians(m_fovYDeg);
 	float cot = std::cos(fovYRad / 2) / std::sin(fovYRad / 2);
 

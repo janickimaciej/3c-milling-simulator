@@ -1,13 +1,11 @@
 #include "window.hpp"
 
-#include "gui.hpp"
 #include "shaderPrograms.hpp"
 
 #include <cmath>
 #include <string>
 
-Window::Window(const glm::ivec2& initialSize) :
-	m_size{initialSize}
+Window::Window()
 {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -15,7 +13,7 @@ Window::Window(const glm::ivec2& initialSize) :
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	static const std::string windowTitle = "3c-milling-simulator";
-	m_windowPtr = glfwCreateWindow(initialSize.x, initialSize.y, windowTitle.c_str(), nullptr,
+	m_windowPtr = glfwCreateWindow(m_initialSize.x, m_initialSize.y, windowTitle.c_str(), nullptr,
 		nullptr);
 	glfwSetWindowUserPointer(m_windowPtr, this);
 	glfwMakeContextCurrent(m_windowPtr);
@@ -27,6 +25,7 @@ Window::Window(const glm::ivec2& initialSize) :
 
 	gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
 
+	updateViewport();
 	ShaderPrograms::init();
 }
 
@@ -35,15 +34,9 @@ Window::~Window()
 	glfwTerminate();
 }
 
-const glm::ivec2& Window::size() const
-{
-	return m_size;
-}
-
-void Window::setWindowData(Scene& scene, GUI& gui)
+void Window::init(Scene& scene)
 {
 	m_scene = &scene;
-	m_gui = &gui;
 }
 
 bool Window::shouldClose() const
@@ -61,6 +54,11 @@ void Window::pollEvents() const
 	glfwPollEvents();
 }
 
+const glm::ivec2& Window::viewportSize() const
+{
+	return m_viewportSize;
+}
+
 GLFWwindow* Window::getPtr()
 {
 	return m_windowPtr;
@@ -73,16 +71,16 @@ void Window::resizeCallback(int width, int height)
 		return;
 	}
 
-	m_size = {width, height};
-	m_scene->updateWindowSize();
-	glViewport(0, 0, width, height);
+	m_viewportSize = {width - LeftPanel::width, height};
+	m_scene->updateViewportSize();
+	updateViewport();
 }
 
 void Window::cursorMovementCallback(double x, double y)
 {
-	glm::vec2 currentPos{static_cast<float>(x), static_cast<float>(y)};
-	glm::vec2 offset = currentPos - m_lastCursorPos;
-	m_lastCursorPos = currentPos;
+	glm::vec2 currPos{static_cast<float>(x), static_cast<float>(y)};
+	glm::vec2 offset = currPos - m_lastCursorPos;
+	m_lastCursorPos = currPos;
 
 	if ((!isKeyPressed(GLFW_KEY_LEFT_SHIFT) &&
 		isButtonPressed(GLFW_MOUSE_BUTTON_MIDDLE))
@@ -125,6 +123,11 @@ void Window::scrollCallback(double, double yOffset)
 	m_scene->zoomCamera(std::pow(sensitivity, static_cast<float>(yOffset)));
 }
 
+void Window::updateViewport() const
+{
+	glViewport(LeftPanel::width, 0, m_viewportSize.x, m_viewportSize.y);
+}
+
 glm::vec2 Window::getCursorPos() const
 {
 	double x{};
@@ -146,5 +149,5 @@ bool Window::isKeyPressed(int key)
 bool Window::isCursorInGUI()
 {
 	glm::vec2 cursorPos = getCursorPos();
-	return cursorPos.x <= GUI::width;
+	return cursorPos.x <= LeftPanel::width;
 }

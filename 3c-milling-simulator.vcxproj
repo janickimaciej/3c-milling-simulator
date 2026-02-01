@@ -173,7 +173,8 @@
     <ClCompile Include="src\cutters\cutterElement.cpp" />
     <ClCompile Include="src\cutters\flatCutter.cpp" />
     <ClCompile Include="src\cutters\roundCutter.cpp" />
-    <ClCompile Include="src\gui.cpp" />
+    <ClCompile Include="src\gui\gui.cpp" />
+    <ClCompile Include="src\gui\leftPanel.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\meshes\faceMesh.cpp" />
     <ClCompile Include="src\meshes\mesh.cpp" />
@@ -205,7 +206,8 @@
     <ClInclude Include="src\cutters\cutterType.hpp" />
     <ClInclude Include="src\cutters\flatCutter.hpp" />
     <ClInclude Include="src\cutters\roundCutter.hpp" />
-    <ClInclude Include="src\gui.hpp" />
+    <ClInclude Include="src\gui\gui.hpp" />
+    <ClInclude Include="src\gui\leftPanel.hpp" />
     <ClInclude Include="src\meshes\faceMesh.hpp" />
     <ClInclude Include="src\meshes\mesh.hpp" />
     <ClInclude Include="src\objParser.hpp" />

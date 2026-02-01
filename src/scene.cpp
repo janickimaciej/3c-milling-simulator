@@ -13,8 +13,8 @@ static constexpr float fovYDeg = 60.0f;
 static constexpr float nearPlane = 1.0f;
 static constexpr float farPlane = 1000.0f;
 
-Scene::Scene(const glm::ivec2& windowSize) :
-	m_camera{windowSize, fovYDeg, nearPlane, farPlane},
+Scene::Scene(const glm::ivec2& viewportSize) :
+	m_camera{viewportSize, fovYDeg, nearPlane, farPlane},
 	m_surface{m_gridSize, m_materialSize.y},
 	m_heightMap{{m_gridSize.x + 1, m_gridSize.y + 1}, m_surface.surface().data()}
 {
@@ -81,9 +81,9 @@ void Scene::render()
 	}
 }
 
-void Scene::updateWindowSize()
+void Scene::updateViewportSize()
 {
-	m_camera.updateWindowSize();
+	m_camera.updateViewportSize();
 }
 
 void Scene::loadToolpathsFile(const std::string& path)

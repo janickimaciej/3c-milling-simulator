@@ -7,11 +7,11 @@
 class Camera
 {
 public:
-	Camera(const glm::ivec2& windowSize, float fovYDeg, float nearPlane, float farPlane);
+	Camera(const glm::ivec2& viewportSize, float fovYDeg, float nearPlane, float farPlane);
 	virtual ~Camera() = default;
 	void use() const;
 	glm::mat4 getMatrix() const;
-	void updateWindowSize();
+	void updateViewportSize();
 	float getFOVYDeg() const;
 	void setFOVYDeg(float fovYDeg);
 
@@ -22,7 +22,7 @@ public:
 	void zoom(float zoom);
 
 private:
-	const glm::ivec2& m_windowSize{};
+	const glm::ivec2& m_viewportSize{};
 	float m_nearPlane{};
 	float m_farPlane{};
 	float m_fovYDeg{};
