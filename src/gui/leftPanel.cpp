@@ -3,6 +3,7 @@
 #include <imgui/imgui.h>
 
 #include <algorithm>
+#include <string>
 
 LeftPanel::LeftPanel(Scene& scene, const glm::ivec2& viewportSize) :
 	m_scene{scene},

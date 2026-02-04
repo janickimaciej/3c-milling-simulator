@@ -1,14 +1,12 @@
 #pragma once
 
-#include "shaderProgram.hpp"
-
 #include <glm/glm.hpp>
 
 class Camera
 {
 public:
-	Camera(const glm::ivec2& viewportSize, float fovYDeg, float nearPlane, float farPlane);
-	virtual ~Camera() = default;
+	Camera(const glm::ivec2& viewportSize, float nearPlane, float farPlane, float fovYDeg);
+
 	void use() const;
 	glm::mat4 getMatrix() const;
 	void updateViewportSize();

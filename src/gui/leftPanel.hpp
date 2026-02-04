@@ -4,7 +4,7 @@
 
 #include <glm/glm.hpp>
 
-#include <string>
+#include <array>
 
 class LeftPanel
 {

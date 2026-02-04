@@ -7,7 +7,6 @@
 #include "cutters/roundCutter.hpp"
 #include "meshes/faceMesh.hpp"
 #include "meshes/polylineMesh.hpp"
-#include "shaderProgram.hpp"
 #include "simulation.hpp"
 #include "surface.hpp"
 #include "texture.hpp"

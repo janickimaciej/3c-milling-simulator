@@ -6,7 +6,7 @@
 
 #include <cmath>
 
-Camera::Camera(const glm::ivec2& viewportSize, float fovYDeg, float nearPlane, float farPlane) :
+Camera::Camera(const glm::ivec2& viewportSize, float nearPlane, float farPlane, float fovYDeg) :
 	m_viewportSize{viewportSize},
 	m_nearPlane{nearPlane},
 	m_farPlane{farPlane},

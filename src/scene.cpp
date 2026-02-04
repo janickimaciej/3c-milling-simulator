@@ -5,6 +5,8 @@
 #include "side.hpp"
 #include "toolpathsFileParser.hpp"
 
+#include <glad/glad.h>
+
 #include <cstddef>
 #include <cstdlib>
 #include <iterator>
@@ -14,12 +16,13 @@ static constexpr float nearPlane = 1.0f;
 static constexpr float farPlane = 1000.0f;
 
 Scene::Scene(const glm::ivec2& viewportSize) :
-	m_camera{viewportSize, fovYDeg, nearPlane, farPlane},
+	m_camera{viewportSize, nearPlane, farPlane, fovYDeg},
 	m_surface{m_gridSize, m_materialSize.y},
 	m_heightMap{{m_gridSize.x + 1, m_gridSize.y + 1}, m_surface.surface().data()}
 {
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
+	glEnable(GL_MULTISAMPLE);
 
 	setCutterType(CutterType::round);
 	m_camera.addPitch(glm::radians(-60.0f));
