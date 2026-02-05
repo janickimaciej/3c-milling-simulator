@@ -11,9 +11,9 @@
 #include <cstdlib>
 #include <iterator>
 
-static constexpr float fovYDeg = 60.0f;
 static constexpr float nearPlane = 1.0f;
 static constexpr float farPlane = 1000.0f;
+static constexpr float fovYDeg = 60.0f;
 
 Scene::Scene(const glm::ivec2& viewportSize) :
 	m_camera{viewportSize, nearPlane, farPlane, fovYDeg},

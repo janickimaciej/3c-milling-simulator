@@ -8,6 +8,7 @@ class RoundCutter : public Cutter
 {
 public:
 	RoundCutter();
+	virtual ~RoundCutter() = default;
 
 	virtual void renderElements() const override;
 	virtual void updateElements() override;

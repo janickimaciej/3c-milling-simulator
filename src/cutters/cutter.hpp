@@ -10,6 +10,7 @@ class Cutter
 public:
 	Cutter(CutterType type);
 	virtual ~Cutter() = default;
+
 	CutterType type() const;
 	void render() const;
 	float getDiameter() const;

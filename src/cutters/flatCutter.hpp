@@ -9,6 +9,7 @@ class FlatCutter : public Cutter
 {
 public:
 	FlatCutter();
+	virtual ~FlatCutter() = default;
 
 	virtual void renderElements() const override;
 	virtual void updateElements() override;
