@@ -21,11 +21,6 @@ void Camera::use() const
 	updateShaders();
 }
 
-glm::mat4 Camera::getMatrix() const
-{
-	return m_projectionMatrix * glm::inverse(m_viewMatrixInverse);
-}
-
 void Camera::updateViewportSize()
 {
 	updateProjectionMatrix();
@@ -39,6 +34,7 @@ float Camera::getFOVYDeg() const
 void Camera::setFOVYDeg(float fovYDeg)
 {
 	m_fovYDeg = fovYDeg;
+
 	updateProjectionMatrix();
 }
 
@@ -93,6 +89,7 @@ void Camera::addYaw(float yawRad)
 void Camera::zoom(float zoom)
 {
 	m_radius /= zoom;
+
 	updateViewMatrix();
 }
 
@@ -109,13 +106,7 @@ glm::vec3 Camera::getPos() const
 
 void Camera::updateViewMatrix()
 {
-	glm::vec3 pos = m_targetPos + m_radius *
-		glm::vec3
-		{
-			-std::cos(m_pitchRad) * std::sin(m_yawRad),
-			-std::sin(m_pitchRad),
-			std::cos(m_pitchRad) * std::cos(m_yawRad)
-		};
+	glm::vec3 pos = getPos();
 
 	glm::vec3 direction = glm::normalize(pos - m_targetPos);
 	glm::vec3 right = glm::normalize(glm::cross(glm::vec3{0, 1, 0}, direction));

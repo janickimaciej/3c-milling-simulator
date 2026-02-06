@@ -8,7 +8,6 @@ public:
 	Camera(const glm::ivec2& viewportSize, float nearPlane, float farPlane, float fovYDeg);
 
 	void use() const;
-	glm::mat4 getMatrix() const;
 	void updateViewportSize();
 	float getFOVYDeg() const;
 	void setFOVYDeg(float fovYDeg);

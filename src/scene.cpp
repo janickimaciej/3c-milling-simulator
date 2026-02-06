@@ -13,10 +13,10 @@
 
 static constexpr float nearPlane = 1.0f;
 static constexpr float farPlane = 1000.0f;
-static constexpr float fovYDeg = 60.0f;
+static constexpr float initFOVYDeg = 60.0f;
 
 Scene::Scene(const glm::ivec2& viewportSize) :
-	m_camera{viewportSize, nearPlane, farPlane, fovYDeg},
+	m_camera{viewportSize, nearPlane, farPlane, initFOVYDeg},
 	m_surface{m_gridSize, m_materialSize.y},
 	m_heightMap{{m_gridSize.x + 1, m_gridSize.y + 1}, m_surface.surface().data()}
 {
